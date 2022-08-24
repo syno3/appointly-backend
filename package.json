@@ -27,7 +27,8 @@
     "express": "^4.18.1",
     "express-graphql": "^0.12.0",
     "graphql": "^16.6.0",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "qs": "^6.11.0"
   },
   "type": "module"
 }
