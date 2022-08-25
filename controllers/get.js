@@ -115,3 +115,99 @@ export const deleteMeeting = async (req, res) => {
 }
 
 
+//////// create invite //////////
+
+//check if a specific meeting exists
+//check if meeting has passed
+export const getMeetingHomepage = async (req, res)=>{
+    const link = req.body.link
+    const date = Date.now()
+    const {data, error} = await supabase
+    .from('Meetings')
+    .select('link')
+    .eq('link', link)
+    if(Object.keys(data).length === 0){
+        res.json({
+            error: 404,
+            message: "meeting dosent exist"
+        }).status(404)
+    }
+    if(error){
+        res.send(error).status(400)
+    }
+
+    res.send({data, date}).status(200)
+}
+
+// insert personal details to invites
+export const insertPersonal = async (req, res)=>{
+    const firstName = req.body.firstName
+    const lastName = req.body.lastname
+    const email = req.body.email
+    const phone = req.body.phone
+    const mpesaphone  = req.body.mpesaphone
+    const status = req.body.status
+
+
+    const { data, error} = await supabase
+    .from('Invites')
+    .insert([{
+        first_name : firstName,
+        last_name : lastName,
+        email : email,
+        phone_number : phone,
+        mpesa_number : mpesaphone,
+        status : status
+    }])
+
+    if(error){
+        res.send(error).status(404)
+    }
+
+    res.json({
+        code : "200",
+        message : "personal details update successfully"
+    }).status(200)
+}
+
+
+// get personal details dashboard //
+export const getPersonal = async (req, res)=>{
+    const user = req.body.user
+    const {data, error} = await supabase
+    .from('Members')
+    .select('id, earnings, withdrawable_balance')
+    .eq('id', user)
+
+    if(error){
+        res.send(error).status(404)
+    }
+
+    res.send(data).status(200)
+}
+
+//update user details
+export const updateUser = async (req, res)=>{
+    const user = req.body.user
+    const first_name = req.body.firstName
+    const last_name = req.body.lastName
+    const photoUrl = req.body.photoUrl
+
+    const { data, error} = await supabase
+    .from('Members')
+    .update([{
+        first_Name: first_name,
+        last_Name : last_name,
+        photoUrl : photoUrl
+    }])
+    .eq('id', user)
+
+    if(error){
+        res.send(error).status(400)
+    }
+
+    res.json({
+        code : "200",
+        message : "details updated successfully"
+    })
+}
