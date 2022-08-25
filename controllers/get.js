@@ -17,10 +17,10 @@ export const login = async (req, res) => {
         password: password
     })
     if(error){
-        res.send(error).status(400);
+        return res.send(error).status(400);
     }
 
-    res.send(user).status(200);
+    return res.send(user).status(200);
 }
 
 //sign up a user
@@ -32,10 +32,10 @@ export const signUp = async (req, res) => {
         password: password
     })
     if(error){
-        res.send(error).status(400);
+        return res.send(error).status(400);
     }
 
-    res.send(user).status(200);
+    return res.send(user).status(200);
 }
 
 //create a new meeting
@@ -61,10 +61,10 @@ export const createMeeting = async (req, res) => {
   ])
 
     if(error){
-        res.send(error).status(400);
+        return res.send(error).status(400);
     }
 
-    res.send({
+    return res.send({
         code : "200",
         message : "meeting created successfully"
     }).status(200);
@@ -79,9 +79,9 @@ export const getMeetings = async (req, res) => {
     .eq('owner', owner)
 
     if(error){
-        res.send(error).status(400);
+        return res.send(error).status(400);
     }
-    res.send(meetings).status(200);
+    return res.send(meetings).status(200);
 }
 
 //get a specific meeting
@@ -95,9 +95,9 @@ export const getMeeting = async (req, res) => {
     .eq('id', id)
 
     if(error){
-        res.send(error).status(400);
+        return res.send(error).status(400);
     }
-    res.send(meeting).status(200);
+    return res.send(meeting).status(200);
 }
 
 //delete a meeting
@@ -111,9 +111,9 @@ export const deleteMeeting = async (req, res) => {
     .eq('id', id)
 
     if(error){
-        res.send(error).status(400);
+        return res.send(error).status(400);
     }
-    res.send({
+    return res.send({
         code: "200",
         message: "meeting deleted successfully"
     }).status(200);
@@ -132,16 +132,16 @@ export const getMeetingHomepage = async (req, res)=>{
     .select('link')
     .eq('link', link)
     if(Object.keys(data).length === 0){
-        res.json({
+        return res.json({
             error: "404",
             message: "meeting dosent exist"
         }).status(404)
     }
     if(error){
-        res.send(error).status(400)
+        return res.send(error).status(400)
     }
 
-    res.send({data, date}).status(200)
+    return res.send({data, date}).status(200)
 }
 
 // insert personal details to invites
@@ -166,10 +166,10 @@ export const insertPersonal = async (req, res)=>{
     }])
 
     if(error){
-        res.send(error).status(404)
+        return res.send(error).status(404)
     }
 
-    res.json({
+    return res.json({
         code : "200",
         message : "personal details update successfully"
     }).status(200)
@@ -185,10 +185,10 @@ export const getPersonal = async (req, res)=>{
     .eq('id', user)
 
     if(error){
-        res.send(error).status(404)
+        return res.send(error).status(404)
     }
 
-    res.send(data).status(200)
+    return res.send(data).status(200)
 }
 
 //update user details
@@ -208,10 +208,10 @@ export const updateUser = async (req, res)=>{
     .eq('id', user)
 
     if(error){
-        res.send(error).status(400)
+        return res.send(error).status(400)
     }
 
-    res.json({
+    return res.json({
         code : "200",
         message : "details updated successfully"
     })
