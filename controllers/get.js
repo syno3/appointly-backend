@@ -2,11 +2,10 @@ import { supabase } from "../utils/supabaseClient.js";
 
 export const testUser = async (req, res) => {
     
-    let { data: Members, error } = await supabase
-    .from('Members')
-    .select('id')
-
-    res.send(Members).status(200);
+    res.json({
+        code: "200",
+        message : "route works successfully"
+    }).status(200)
 }
 
 // sign in a user with their password
@@ -65,7 +64,10 @@ export const createMeeting = async (req, res) => {
         res.send(error).status(400);
     }
 
-    res.send(data).status(200);
+    res.send({
+        code : "200",
+        message : "meeting created successfully"
+    }).status(200);
 }
 
 //get all meetings that user created
@@ -84,7 +86,7 @@ export const getMeetings = async (req, res) => {
 
 //get a specific meeting
 export const getMeeting = async (req, res) => {
-    const id = req.query.id; //id of meeting in query
+    const id = req.body.id; //id of meeting in query
     const owner = req.body.owner; //owner of meeting in body
     const {data: meeting, error} = await supabase
     .from('Meetings')
@@ -100,7 +102,7 @@ export const getMeeting = async (req, res) => {
 
 //delete a meeting
 export const deleteMeeting = async (req, res) => {
-    const id = req.query.id; //id of meeting in query
+    const id = req.body.id; //id of meeting in query
     const owner = req.body.owner; //owner of meeting in body
     const {data: meeting, error} = await supabase
     .from('Meetings')
@@ -111,7 +113,10 @@ export const deleteMeeting = async (req, res) => {
     if(error){
         res.send(error).status(400);
     }
-    res.send(meeting).status(200);
+    res.send({
+        code: "200",
+        message: "meeting deleted successfully"
+    }).status(200);
 }
 
 
@@ -128,7 +133,7 @@ export const getMeetingHomepage = async (req, res)=>{
     .eq('link', link)
     if(Object.keys(data).length === 0){
         res.json({
-            error: 404,
+            error: "404",
             message: "meeting dosent exist"
         }).status(404)
     }
