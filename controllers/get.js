@@ -72,7 +72,7 @@ export const createMeeting = async (req, res) => {
 
 //get all meetings that user created
 export const getMeetings = async (req, res) => {
-    const owner = req.body.owner;
+    const owner = req.query.owner;
     const {data: meetings, error} = await supabase
     .from('Meetings')
     .select("*")
