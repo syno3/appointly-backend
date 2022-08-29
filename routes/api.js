@@ -3,6 +3,7 @@ import {
   testUser,
   login,
   signUp,
+  postClient,
   getMeetings,
   getMeeting,
   getPersonal,
@@ -33,6 +34,8 @@ router.post("/signup", signUp);
 router.post("/createMeeting", createMeeting);
 router.post("/getMeetingHomepage", getMeetingHomepage);
 router.post("/insertPersonal", insertPersonal);
+router.post("/postClient", postClient);
+
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);

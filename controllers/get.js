@@ -60,23 +60,22 @@ export const createMeeting = async (req, res) => {
   const type = req.body.type;
   const link = req.body.link;
   const status = req.body.status;
-  const date_start = req.body.date_start;
+  const date = req.body.date;
   const time = req.body.time;
   const duration = req.body.duration;
   const cover = req.body.cover;
-
   const owner = req.body.owner;
 
   const { data, error } = await supabase.from("Meetings").insert([
     {
       title: title,
       description: description,
-      payment_Amount: payment,
+      payment_amount: payment,
       capacity: capacity,
       type: type,
       link: link,
       status: status,
-      date_start: date_start,
+      date_start: date,
       time: time,
       duration: duration,
       coverPhoto: cover,
@@ -169,8 +168,6 @@ export const deleteMeeting = async (req, res) => {
     })
     .status(200);
 };
-
-//////// create invite //////////
 
 //check if a specific meeting exists
 //check if meeting has passed
@@ -293,7 +290,6 @@ export const updateUser = async (req, res) => {
 };
 
 // get list of all schedules from a member
-
 export const getSchedules = async (req, res) => {
   const owner = req.query.q; // please note that this is a query not a body
   const { data: Schedule, error } = await supabase
@@ -303,7 +299,9 @@ export const getSchedules = async (req, res) => {
 
   const { data: Member, error: error1 } = await supabase
     .from("Members")
-    .select("first_name, last_name, photoUrl, long_description, short_description, appointment_duration, appointment_amount")
+    .select(
+      "first_name, last_name, photoUrl, long_description, short_description, appointment_duration, appointment_amount"
+    )
     .eq("id", owner);
 
   if (error) {
@@ -375,6 +373,36 @@ export const getClients = async (req, res) => {
     .send({
       code: "200",
       clients,
+    })
+    .status(200);
+};
+
+// post new client
+export const postClient = async (req, res) => {
+  const { first_name, last_name, phone_number, email } = req.body;
+  const { data: Client, error } = await supabase.from("Client").insert([
+    {
+      first_name: first_name,
+      last_name: last_name,
+      phone_number: phone_number,
+      email: email,
+    },
+  ]);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "client added successfully",
+      Client,
     })
     .status(200);
 };
