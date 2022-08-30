@@ -59,14 +59,47 @@ export const createMeeting = async (req, res) => {
   const capacity = req.body.capacity;
   const type = req.body.type;
   const link = req.body.link;
+  const external_link = req.body.external_link;
   const status = req.body.status;
   const date = req.body.date;
   const time = req.body.time;
   const duration = req.body.duration;
   const cover = req.body.cover;
   const owner = req.body.owner;
+  const medianame = req.body.filename;
 
-  const { data, error } = await supabase.from("Meetings").insert([
+  // upload image to supabase storage
+  const { data: image, error } = await supabase.storage
+    .from("meetings")
+    .upload(`${medianame}`, cover, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+  // create signed url
+  const { data: publicUrl, err } = await supabase.storage
+    .from("meetings")
+    .getPublicUrl(`${medianame}`);
+
+  if (err) {
+    return res
+      .json({
+        code: "400",
+        err,
+      })
+      .status(400);
+  }
+
+  // insert meeting to supabase database with cover image url
+  const { data, error1 } = await supabase.from("Meetings").insert([
     {
       title: title,
       description: description,
@@ -77,13 +110,14 @@ export const createMeeting = async (req, res) => {
       status: status,
       date_start: date,
       time: time,
+      coverPhoto: publicUrl.publicUrl,
       duration: duration,
-      coverPhoto: cover,
       owner: owner,
+      external_link: external_link,
     },
   ]);
 
-  if (error) {
+  if (error1) {
     return res
       .json({
         code: "400",
@@ -96,6 +130,7 @@ export const createMeeting = async (req, res) => {
     .send({
       code: "200",
       message: "meeting created successfully",
+      data,
     })
     .status(200);
 };
@@ -398,11 +433,148 @@ export const postClient = async (req, res) => {
       .status(400);
   }
 
+  const { data: client_id, error1 } = await supabase
+    .from("Client")
+    .select("id")
+    .eq("email", email);
+
+  if (error1) {
+    return res
+      .json({
+        code: "400",
+        error1,
+      })
+      .status(400);
+  }
+
   return res
     .json({
       code: "200",
       message: "client added successfully",
-      Client,
+      client_id,
     })
     .status(200);
+};
+
+// post new appointment
+export const postAppointment = async (req, res) => {
+  const { member_id, client_id, status, schedule_id} = req.body;
+  //we create appointment
+  const { data: appointment, error } = await supabase
+    .from("Appointment")
+    .insert([
+      {
+        member_id: member_id,
+        status: status,
+        client_id: client_id,
+        schedule_id: schedule_id,
+      },
+    ]);
+
+    if (error) {
+      return res
+        .json({
+          code: "400",
+          error,
+        })
+        .status(400);
+    }
+
+  // get appointment id
+  const { data: appointment_id, error1 } = await supabase
+    .from("Appointment")
+    .select("id")
+    .eq("member_id", member_id)
+    .eq("client_id", client_id)
+    .eq("schedule_id", schedule_id);
+
+
+  if (error1) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+  return res
+    .json({
+      code: "200",
+      message: "appointment added successfully",
+      appointment_id,
+    })
+    .status(200);
+}
+// update schedule to include appointment id
+export const updateSchedule = async (req, res) => {
+  const { schedule_id, appointment_id } = req.body;
+  const { data: Schedule, error } = await supabase
+    .from("Schedule")
+    .update([
+      {
+        appointment_id: appointment_id,
+      },
+    ])
+    .eq("id", schedule_id);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+  return res
+    .json({
+      code: "200",
+      message: "schedule updated successfully",
+      Schedule,
+    })
+}
+
+// get amount information from members table
+export const getAmount = async (req, res) => {
+  const user = req.query.user; // please note that this is a query not a body
+  const { data: Member, error } = await supabase
+    .from("Members")
+    .select("earnings, withdrawable_balance, link")
+    .eq("id", user);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res.json({
+    code: "200",
+    Member,
+  });
+};
+
+// get basic information from members table
+export const getBasic = async (req, res) => {
+  const user = req.query.user; // please note that this is a query not a body
+  const { data: Member, error } = await supabase
+    .from("Members")
+    .select("first_name, last_name, photoUrl")
+    .eq("id", user);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res.json({
+    code: "200",
+    Member,
+  });
 };
