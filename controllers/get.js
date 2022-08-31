@@ -458,7 +458,7 @@ export const postClient = async (req, res) => {
 
 // post new appointment
 export const postAppointment = async (req, res) => {
-  const { member_id, client_id, status, schedule_id} = req.body;
+  const { member_id, client_id, status, schedule_id } = req.body;
   //we create appointment
   const { data: appointment, error } = await supabase
     .from("Appointment")
@@ -471,14 +471,14 @@ export const postAppointment = async (req, res) => {
       },
     ]);
 
-    if (error) {
-      return res
-        .json({
-          code: "400",
-          error,
-        })
-        .status(400);
-    }
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
 
   // get appointment id
   const { data: appointment_id, error1 } = await supabase
@@ -487,7 +487,6 @@ export const postAppointment = async (req, res) => {
     .eq("member_id", member_id)
     .eq("client_id", client_id)
     .eq("schedule_id", schedule_id);
-
 
   if (error1) {
     return res
@@ -504,7 +503,7 @@ export const postAppointment = async (req, res) => {
       appointment_id,
     })
     .status(200);
-}
+};
 // update schedule to include appointment id
 export const updateSchedule = async (req, res) => {
   const { schedule_id, appointment_id } = req.body;
@@ -525,13 +524,12 @@ export const updateSchedule = async (req, res) => {
       })
       .status(400);
   }
-  return res
-    .json({
-      code: "200",
-      message: "schedule updated successfully",
-      Schedule,
-    })
-}
+  return res.json({
+    code: "200",
+    message: "schedule updated successfully",
+    Schedule,
+  });
+};
 
 // get amount information from members table
 export const getAmount = async (req, res) => {
@@ -578,3 +576,67 @@ export const getBasic = async (req, res) => {
     Member,
   });
 };
+
+// create new schedule
+export const postSchedule = async (req, res) => {
+  const link = req.body.link;
+  const data = req.body.scheduled;
+
+  const { data: Schedule, error } = await supabase
+    .from("Schedule")
+    .insert(data);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "schedule added successfully",
+      Schedule,
+    })
+    .status(200);
+};
+
+// signup new member
+export const postMember = async (req, res) => {
+  const { firstname, lastname, ip_address, email, password } = req.body;
+
+  const { user, error } = await supabase.auth.signUp(
+    {
+    email: email,
+    password: password,
+  },
+  {
+    data: {
+      first_name : firstname,
+      last_name : lastname,
+      ip_address : ip_address,
+      email : email,
+    },
+  }
+  );
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+
+  return res.json({
+    code: "200",
+    message: "member added successfully",
+    user,
+  });
+};
+

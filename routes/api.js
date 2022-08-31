@@ -4,6 +4,8 @@ import {
   login,
   signUp,
   postClient,
+  postSchedule,
+  postMember,
   postAppointment,
   getMeetings,
   getMeeting,
@@ -18,7 +20,7 @@ import {
   getMeetingHomepage,
   insertPersonal,
   updateUser,
-  updateSchedule
+  updateSchedule,
 } from "../controllers/get.js";
 
 const router = express.Router();
@@ -34,6 +36,7 @@ router.get("/getClients", getClients);
 router.get("/getAmount", getAmount);
 router.get("/getBasic", getBasic);
 
+
 //post routes
 router.post("/login", login);
 router.post("/signup", signUp);
@@ -43,7 +46,8 @@ router.post("/insertPersonal", insertPersonal);
 router.post("/postClient", postClient);
 router.post("/postAppointment", postAppointment);
 router.post("/updateSchedule", updateSchedule);
-
+router.post("/postSchedule", postSchedule);
+router.post("/postMember", postMember);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);
