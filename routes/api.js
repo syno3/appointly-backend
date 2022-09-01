@@ -3,6 +3,7 @@ import {
   testUser,
   login,
   signUp,
+  updateMember,
   postClient,
   postSchedule,
   postMember,
@@ -36,7 +37,6 @@ router.get("/getClients", getClients);
 router.get("/getAmount", getAmount);
 router.get("/getBasic", getBasic);
 
-
 //post routes
 router.post("/login", login);
 router.post("/signup", signUp);
@@ -48,6 +48,8 @@ router.post("/postAppointment", postAppointment);
 router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", postSchedule);
 router.post("/postMember", postMember);
+router.post("/updateMember", updateMember);
+
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);

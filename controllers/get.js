@@ -606,22 +606,51 @@ export const postSchedule = async (req, res) => {
 
 // signup new member
 export const postMember = async (req, res) => {
-  const { firstname, lastname, ip_address, email, password } = req.body;
+  console.log("creating user ..........")
 
-  const { user, error } = await supabase.auth.signUp(
-    {
+  const { email, password } = req.body;
+
+  const { data: user, error } = await supabase.auth.signUp({
     email: email,
-    password: password,
-  },
-  {
-    data: {
-      first_name : firstname,
-      last_name : lastname,
-      ip_address : ip_address,
-      email : email,
-    },
-  }
-  );
+    password: password
+  });
+
+    if (error) {
+      return res
+        .json({
+          code: "400",
+          error,
+        })
+        .status(400);
+    }
+
+    console.log("user created successfully")
+
+  return res.json({
+    code: "200",
+    message: "member added successfully",
+    user,
+  });
+};
+
+// upate created member with additional information
+export const updateMember = async (req, res) => {
+  console.log("updating user ..........")
+  const { first_name, last_name, ip_address, id, email } = req.body;
+
+  console.log(first_name, last_name, ip_address, id, email)
+
+  const { data: Member, error } = await supabase
+    .from("Members")
+    .update([
+      {
+        first_name: first_name,
+        last_name: last_name,
+        ip_address: ip_address,
+        email: email
+      },
+    ])
+    .eq("id", id);
 
   if (error) {
     return res
@@ -632,11 +661,11 @@ export const postMember = async (req, res) => {
       .status(400);
   }
 
+  console.log("updated user ..........")
 
   return res.json({
     code: "200",
-    message: "member added successfully",
-    user,
+    message: "member updated successfully",
+    Member,
   });
-};
-
+}
