@@ -1,5 +1,4 @@
 import { supabase } from "../utils/supabaseClient.js";
-import { decode } from 'base64-arraybuffer';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -99,14 +98,14 @@ export const createMeeting = async (req, res) => {
   const owner = req.body.owner;
   const medianame = req.body.filename;
 
+
   // upload image to supabase storage
   const { data: image, error } = await supabase.storage
     .from("meetings")
-    .upload(`${medianame}`, decode(cover), {
+    .upload(`${medianame}`, cover, {
       cacheControl: "3600",
       upsert: false,
     });
-
   if (error) {
     return res
       .json({
@@ -119,6 +118,8 @@ export const createMeeting = async (req, res) => {
   const { data: publicUrl, err } = await supabase.storage
     .from("meetings")
     .getPublicUrl(`${medianame}`);
+
+    console.log(publicUrl)
 
   if (err) {
     return res
@@ -148,7 +149,10 @@ export const createMeeting = async (req, res) => {
     },
   ]);
 
+  console.log(data)
+
   if (error1) {
+    console.log(error1)
     return res
       .json({
         code: "400",
@@ -169,12 +173,15 @@ export const createMeeting = async (req, res) => {
 //get all meetings that user created
 export const getMeetings = async (req, res) => {
   const owner = req.query.owner;
+
+  console.log(owner, "owner")
   const { data: meetings, error } = await supabase
     .from("Meetings")
     .select("*")
     .eq("owner", owner);
 
   if (error) {
+    console.log("error occured", error)
     return res
       .json({
         code: "400",
@@ -182,7 +189,7 @@ export const getMeetings = async (req, res) => {
       })
       .status(400);
   }
-
+  console.log("getting meeting successfully")
   return res.send({
     code : "200",
     message : "meetings fetched successfully",
@@ -706,9 +713,4 @@ export const updateMember = async (req, res) => {
 }
 
 // get list 
-
-
-
-
-
 
