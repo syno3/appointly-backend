@@ -1,4 +1,9 @@
 import { supabase } from "../utils/supabaseClient.js";
+import { decode } from 'base64-arraybuffer';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const testUser = async (req, res) => {
   res
@@ -13,6 +18,8 @@ export const testUser = async (req, res) => {
 export const login = async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  console.log(email, password)
   const { user, error } = await supabase.auth.signInWithPassword({
     email: email,
     password: password,
@@ -27,7 +34,31 @@ export const login = async (req, res) => {
       .status(400);
   }
 
-  return res.send(user).status(200);
+  let { data: id, error1 } = await supabase
+  .from('Members')
+  .select('id')
+  .eq('email', email)
+  .single()
+
+  if(error1) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  const details = { user : id}
+
+  /// generate a token for the user query database for email and return id
+  const token = jwt.sign(details, process.env.ACESS_TOKEN_SECRET);
+
+  return res.send({
+    code : "200",
+    message : "user logged in",
+    id
+  }).status(200);
 };
 
 //sign up a user
@@ -64,14 +95,14 @@ export const createMeeting = async (req, res) => {
   const date = req.body.date;
   const time = req.body.time;
   const duration = req.body.duration;
-  const cover = req.body.cover;
+  const cover = req.body.cover; // bas64 content image
   const owner = req.body.owner;
   const medianame = req.body.filename;
 
   // upload image to supabase storage
   const { data: image, error } = await supabase.storage
     .from("meetings")
-    .upload(`${medianame}`, cover, {
+    .upload(`${medianame}`, decode(cover), {
       cacheControl: "3600",
       upsert: false,
     });
@@ -152,7 +183,11 @@ export const getMeetings = async (req, res) => {
       .status(400);
   }
 
-  return res.send(meetings).status(200);
+  return res.send({
+    code : "200",
+    message : "meetings fetched successfully",
+    meetings
+  }).status(200);
 };
 
 //get a specific meeting
@@ -211,7 +246,7 @@ export const getMeetingHomepage = async (req, res) => {
   const date = Date.now();
   const { data, error } = await supabase
     .from("Meetings")
-    .select("link")
+    .select("link, payment_amount")
     .eq("link", link);
   if (Object.keys(data).length === 0) {
     return res
@@ -236,21 +271,21 @@ export const getMeetingHomepage = async (req, res) => {
 
 // insert personal details to invites
 export const insertPersonal = async (req, res) => {
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastname;
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
   const email = req.body.email;
-  const phone = req.body.phone;
   const mpesaphone = req.body.mpesaphone;
   const status = req.body.status;
+  const meeting_id = req.body.meeting_id;
 
   const { data, error } = await supabase.from("Invites").insert([
     {
-      first_name: firstName,
-      last_name: lastName,
+      first_name: firstname,
+      last_name: lastname,
       email: email,
-      phone_number: phone,
       mpesa_number: mpesaphone,
       status: status,
+      meeting_id : meeting_id
     },
   ]);
 
@@ -669,3 +704,11 @@ export const updateMember = async (req, res) => {
     Member,
   });
 }
+
+// get list 
+
+
+
+
+
+
