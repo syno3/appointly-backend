@@ -81,31 +81,21 @@ export const signUp = async (req, res) => {
   return res.send(user).status(200);
 };
 
-//create a new meeting
-export const createMeeting = async (req, res) => {
-  const title = req.body.title;
-  const description = req.body.description;
-  const payment = req.body.payment;
-  const capacity = req.body.capacity;
-  const type = req.body.type;
-  const link = req.body.link;
-  const external_link = req.body.external_link;
-  const status = req.body.status;
-  const date = req.body.date;
-  const time = req.body.time;
-  const duration = req.body.duration;
-  const cover = req.body.cover; // bas64 content image
-  const owner = req.body.owner;
-  const medianame = req.body.filename;
+// upload image to bucket and get public url
+export const uploadImage = async (req, res) => {
+  console.log("uploading image............")
+  const { file, filename } = req.body;
 
+  console.log(typeof(filename));
 
-  // upload image to supabase storage
+  // upload file to bucket
   const { data: image, error } = await supabase.storage
     .from("meetings")
-    .upload(`${medianame}`, cover, {
+    .upload(`${filename}`, file, {
       cacheControl: "3600",
       upsert: false,
     });
+
   if (error) {
     return res
       .json({
@@ -114,10 +104,11 @@ export const createMeeting = async (req, res) => {
       })
       .status(400);
   }
+
   // create signed url
   const { data: publicUrl, err } = await supabase.storage
     .from("meetings")
-    .getPublicUrl(`${medianame}`);
+    .getPublicUrl(`${filename}`);
 
     console.log(publicUrl)
 
@@ -130,6 +121,31 @@ export const createMeeting = async (req, res) => {
       .status(400);
   }
 
+  res.send({
+    code: "200",
+    message: "image uploaded successfully",
+    publicUrl,
+  }).status(200);
+}
+
+//create a new meeting
+export const createMeeting = async (req, res) => {
+  console.log("uploading meeting............")
+  const title = req.body.title;
+  const description = req.body.description;
+  const payment = req.body.payment;
+  const capacity = req.body.capacity;
+  const link = req.body.link;
+  const external_link = req.body.external_link;
+  const status = req.body.status;
+  const date = req.body.date;
+  const time = req.body.time;
+  const duration = req.body.duration;
+  const owner = req.body.owner;
+  const cover = req.body.cover
+
+  console.log(title, description, payment, capacity, type, link, external_link, status, date, time, duration, owner, cover)
+
   // insert meeting to supabase database with cover image url
   const { data, error1 } = await supabase.from("Meetings").insert([
     {
@@ -137,19 +153,17 @@ export const createMeeting = async (req, res) => {
       description: description,
       payment_amount: payment,
       capacity: capacity,
-      type: type,
       link: link,
       status: status,
       date_start: date,
       time: time,
-      coverPhoto: publicUrl.publicUrl,
+      coverPhoto: cover,
       duration: duration,
       owner: owner,
       external_link: external_link,
     },
   ]);
 
-  console.log(data)
 
   if (error1) {
     console.log(error1)
@@ -160,6 +174,8 @@ export const createMeeting = async (req, res) => {
       })
       .status(400);
   }
+
+  console.log("uploaded meeting............")
 
   return res
     .send({
@@ -189,7 +205,7 @@ export const getMeetings = async (req, res) => {
       })
       .status(400);
   }
-  console.log("getting meeting successfully")
+  console.log(meetings)
   return res.send({
     code : "200",
     message : "meetings fetched successfully",
@@ -284,6 +300,8 @@ export const insertPersonal = async (req, res) => {
   const mpesaphone = req.body.mpesaphone;
   const status = req.body.status;
   const meeting_id = req.body.meeting_id;
+  const amount_paid = req.body.amount_paid;
+  const owner_meeting = req.body.owner_meeting;
 
   const { data, error } = await supabase.from("Invites").insert([
     {
@@ -292,7 +310,9 @@ export const insertPersonal = async (req, res) => {
       email: email,
       mpesa_number: mpesaphone,
       status: status,
-      meeting_id : meeting_id
+      meeting_id : meeting_id,
+      amount_paid : amount_paid,
+      owner_meeting : owner_meeting
     },
   ]);
 
@@ -712,5 +732,4 @@ export const updateMember = async (req, res) => {
   });
 }
 
-// get list 
-
+// update member earnings when an invite is created

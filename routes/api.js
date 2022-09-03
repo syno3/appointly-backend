@@ -6,6 +6,8 @@ import {
   updateMember,
   postClient,
   postSchedule,
+  uploadImage,
+  testMeeting,
   postMember,
   postAppointment,
   getMeetings,
@@ -49,6 +51,13 @@ router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", postSchedule);
 router.post("/postMember", postMember);
 router.post("/updateMember", updateMember);
+router.post("/uploadImage", uploadImage);
+
+
+
+
+router.post("/testMeeting", testMeeting);
+
 
 
 //delete routes
