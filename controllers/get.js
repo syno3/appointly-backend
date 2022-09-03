@@ -1,8 +1,6 @@
 import { supabase } from "../utils/supabaseClient.js";
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 export const testUser = async (req, res) => {
   res
@@ -18,7 +16,7 @@ export const login = async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  console.log(email, password)
+  console.log(email, password);
   const { user, error } = await supabase.auth.signInWithPassword({
     email: email,
     password: password,
@@ -34,12 +32,12 @@ export const login = async (req, res) => {
   }
 
   let { data: id, error1 } = await supabase
-  .from('Members')
-  .select('id')
-  .eq('email', email)
-  .single()
+    .from("Members")
+    .select("id")
+    .eq("email", email)
+    .single();
 
-  if(error1) {
+  if (error1) {
     return res
       .json({
         code: "400",
@@ -48,16 +46,18 @@ export const login = async (req, res) => {
       .status(400);
   }
 
-  const details = { user : id}
+  const details = { user: id };
 
   /// generate a token for the user query database for email and return id
   const token = jwt.sign(details, process.env.ACESS_TOKEN_SECRET);
 
-  return res.send({
-    code : "200",
-    message : "user logged in",
-    id
-  }).status(200);
+  return res
+    .send({
+      code: "200",
+      message: "user logged in",
+      id,
+    })
+    .status(200);
 };
 
 //sign up a user
@@ -83,10 +83,8 @@ export const signUp = async (req, res) => {
 
 // upload image to bucket and get public url
 export const uploadImage = async (req, res) => {
-  console.log("uploading image............")
+  console.log("uploading image............");
   const { file, filename } = req.body;
-
-  console.log(typeof(filename));
 
   // upload file to bucket
   const { data: image, error } = await supabase.storage
@@ -105,32 +103,18 @@ export const uploadImage = async (req, res) => {
       .status(400);
   }
 
-  // create signed url
-  const { data: publicUrl, err } = await supabase.storage
-    .from("meetings")
-    .getPublicUrl(`${filename}`);
-
-    console.log(publicUrl)
-
-  if (err) {
-    return res
-      .json({
-        code: "400",
-        err,
-      })
-      .status(400);
-  }
-
-  res.send({
-    code: "200",
-    message: "image uploaded successfully",
-    publicUrl,
-  }).status(200);
-}
+  res
+    .send({
+      code: "200",
+      message: "image uploaded successfully",
+      publicUrl,
+    })
+    .status(200);
+};
 
 //create a new meeting
 export const createMeeting = async (req, res) => {
-  console.log("uploading meeting............")
+  console.log("uploading meeting............");
   const title = req.body.title;
   const description = req.body.description;
   const payment = req.body.payment;
@@ -142,9 +126,36 @@ export const createMeeting = async (req, res) => {
   const time = req.body.time;
   const duration = req.body.duration;
   const owner = req.body.owner;
-  const cover = req.body.cover
+  const filename = req.body.filename;
 
-  console.log(title, description, payment, capacity, type, link, external_link, status, date, time, duration, owner, cover)
+  console.log(
+    title,
+    description,
+    payment,
+    capacity,
+    link,
+    external_link,
+    status,
+    date,
+    time,
+    duration,
+    owner
+  );
+  // create signed url
+  const { data: publicUrl, err } = await supabase.storage
+    .from("meetings")
+    .getPublicUrl(`${filename}`);
+
+  console.log(publicUrl);
+
+  if (err) {
+    return res
+      .json({
+        code: "400",
+        err,
+      })
+      .status(400);
+  }
 
   // insert meeting to supabase database with cover image url
   const { data, error1 } = await supabase.from("Meetings").insert([
@@ -157,16 +168,15 @@ export const createMeeting = async (req, res) => {
       status: status,
       date_start: date,
       time: time,
-      coverPhoto: cover,
+      coverPhoto: publicUrl.publicUrl,
       duration: duration,
       owner: owner,
       external_link: external_link,
     },
   ]);
 
-
   if (error1) {
-    console.log(error1)
+    console.log(error1);
     return res
       .json({
         code: "400",
@@ -175,7 +185,7 @@ export const createMeeting = async (req, res) => {
       .status(400);
   }
 
-  console.log("uploaded meeting............")
+  console.log("uploaded meeting............");
 
   return res
     .send({
@@ -190,14 +200,14 @@ export const createMeeting = async (req, res) => {
 export const getMeetings = async (req, res) => {
   const owner = req.query.owner;
 
-  console.log(owner, "owner")
+  console.log(owner, "owner");
   const { data: meetings, error } = await supabase
     .from("Meetings")
     .select("*")
     .eq("owner", owner);
 
   if (error) {
-    console.log("error occured", error)
+    console.log("error occured", error);
     return res
       .json({
         code: "400",
@@ -205,12 +215,14 @@ export const getMeetings = async (req, res) => {
       })
       .status(400);
   }
-  console.log(meetings)
-  return res.send({
-    code : "200",
-    message : "meetings fetched successfully",
-    meetings
-  }).status(200);
+  console.log(meetings);
+  return res
+    .send({
+      code: "200",
+      message: "meetings fetched successfully",
+      meetings,
+    })
+    .status(200);
 };
 
 //get a specific meeting
@@ -269,7 +281,7 @@ export const getMeetingHomepage = async (req, res) => {
   const date = Date.now();
   const { data, error } = await supabase
     .from("Meetings")
-    .select("link, payment_amount")
+    .select("link, payment_amount, owner, id")
     .eq("link", link);
   if (Object.keys(data).length === 0) {
     return res
@@ -310,9 +322,9 @@ export const insertPersonal = async (req, res) => {
       email: email,
       mpesa_number: mpesaphone,
       status: status,
-      meeting_id : meeting_id,
-      amount_paid : amount_paid,
-      owner_meeting : owner_meeting
+      meeting_id: meeting_id,
+      amount_paid: amount_paid,
+      owner_meeting: owner_meeting,
     },
   ]);
 
@@ -668,25 +680,25 @@ export const postSchedule = async (req, res) => {
 
 // signup new member
 export const postMember = async (req, res) => {
-  console.log("creating user ..........")
+  console.log("creating user ..........");
 
   const { email, password } = req.body;
 
   const { data: user, error } = await supabase.auth.signUp({
     email: email,
-    password: password
+    password: password,
   });
 
-    if (error) {
-      return res
-        .json({
-          code: "400",
-          error,
-        })
-        .status(400);
-    }
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
 
-    console.log("user created successfully")
+  console.log("user created successfully");
 
   return res.json({
     code: "200",
@@ -697,10 +709,10 @@ export const postMember = async (req, res) => {
 
 // upate created member with additional information
 export const updateMember = async (req, res) => {
-  console.log("updating user ..........")
+  console.log("updating user ..........");
   const { first_name, last_name, ip_address, id, email } = req.body;
 
-  console.log(first_name, last_name, ip_address, id, email)
+  console.log(first_name, last_name, ip_address, id, email);
 
   const { data: Member, error } = await supabase
     .from("Members")
@@ -709,7 +721,7 @@ export const updateMember = async (req, res) => {
         first_name: first_name,
         last_name: last_name,
         ip_address: ip_address,
-        email: email
+        email: email,
       },
     ])
     .eq("id", id);
@@ -723,13 +735,16 @@ export const updateMember = async (req, res) => {
       .status(400);
   }
 
-  console.log("updated user ..........")
+  console.log("updated user ..........");
 
   return res.json({
     code: "200",
     message: "member updated successfully",
     Member,
   });
-}
+};
 
 // update member earnings when an invite is created
+
+// agora token generator
+export const getAgoraToken = async (req, res) => {};

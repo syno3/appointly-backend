@@ -21,6 +21,7 @@
   "homepage": "https://github.com/syno3/appointly-backend#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.0.0-rc.6",
+    "agora-access-token": "^2.0.4",
     "axios": "^0.27.2",
     "base64-arraybuffer": "^1.0.2",
     "body-parser": "^1.20.0",
