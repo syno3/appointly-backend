@@ -610,7 +610,7 @@ export const getAmount = async (req, res) => {
   const user = req.query.user; // please note that this is a query not a body
   const { data: Member, error } = await supabase
     .from("Members")
-    .select("earnings, withdrawable_balance, link")
+    .select("earnings, withdrawable_balance, link, photoUrl")
     .eq("id", user);
 
   if (error) {
@@ -744,7 +744,64 @@ export const updateMember = async (req, res) => {
   });
 };
 
-// update member earnings when an invite is created
+// update user profile details
+export const updateProfile = async (req, res) => {
+  const {
+    id,
+    display_name,
+    short_description,
+    long_description,
+    appointment_duration,
+    appointment_amount,
+    filename,
+  } = req.body;
 
-// agora token generator
-export const getAgoraToken = async (req, res) => {};
+  console.log(filename);
+
+  // create signed url
+  let { data: publicUrl, err } = await supabase.storage
+    .from("meetings")
+    .getPublicUrl(`${filename}`);
+  if (err) {
+    res
+      .json({
+        code: "400",
+        message: "error creating public url",
+        err,
+      })
+      .status(400);
+  }
+
+  console.log(publicUrl);
+
+  const { data: Member, error } = await supabase
+    .from("Members")
+    .update([
+      {
+        display_name: display_name,
+        short_description: short_description,
+        long_description: long_description,
+        appointment_duration: appointment_duration,
+        appointment_amount: appointment_amount,
+        photoUrl: publicUrl?.publicUrl,
+      },
+    ])
+    .eq("id", id);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "member updated successfully",
+      Member,
+    })
+    .status(200);
+};

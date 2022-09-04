@@ -7,6 +7,7 @@ import {
   postClient,
   postSchedule,
   uploadImage,
+  updateProfile,
   postMember,
   postAppointment,
   getMeetings,
@@ -25,7 +26,7 @@ import {
   updateSchedule,
 } from "../controllers/get.js";
 
-import {nocache, generateRTCToken} from "../controllers/agora.cjs";
+import { nocache, generateRTCToken } from "../controllers/agora.cjs";
 
 const router = express.Router();
 
@@ -41,7 +42,6 @@ router.get("/getAmount", getAmount);
 router.get("/getBasic", getBasic);
 router.get("/rtc", nocache, generateRTCToken);
 
-
 //post routes
 router.post("/login", login);
 router.post("/signup", signUp);
@@ -55,6 +55,7 @@ router.post("/postSchedule", postSchedule);
 router.post("/postMember", postMember);
 router.post("/updateMember", updateMember);
 router.post("/uploadImage", uploadImage);
+router.post("/updateProfile", updateProfile);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);
