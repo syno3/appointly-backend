@@ -227,12 +227,10 @@ export const getMeetings = async (req, res) => {
 
 //get a specific meeting
 export const getMeeting = async (req, res) => {
-  const id = req.body.id; //id of meeting in query
-  const owner = req.body.owner; //owner of meeting in body
+  const id = req.query.id; //id of meeting in query
   const { data: meeting, error } = await supabase
     .from("Meetings")
     .select("*")
-    .eq("owner", owner)
     .eq("id", id);
 
   if (error) {
@@ -244,7 +242,11 @@ export const getMeeting = async (req, res) => {
       .status(400);
   }
 
-  return res.send(meeting).status(200);
+  return res.json({
+    code : "200",
+    message : "meeting fetched successfully",
+    meeting
+  }).status(200);
 };
 
 //delete a meeting
