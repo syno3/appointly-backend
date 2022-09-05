@@ -242,11 +242,13 @@ export const getMeeting = async (req, res) => {
       .status(400);
   }
 
-  return res.json({
-    code : "200",
-    message : "meeting fetched successfully",
-    meeting
-  }).status(200);
+  return res
+    .json({
+      code: "200",
+      message: "meeting fetched successfully",
+      meeting,
+    })
+    .status(200);
 };
 
 //delete a meeting
