@@ -683,6 +683,11 @@ minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
+mpesa-api@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/mpesa-api/-/mpesa-api-3.0.2.tgz#21ae058eba05850be1d9f1863f51cb584c8a2ab8"
+  integrity sha512-lOueQBRwqD9wOWGNz+vYZuWclwJ5DTCoMoPutHqYcvlYeNZJtjvRvFqSqVV654qy8SZO/TPAJ6+PIybHkO9GBw==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -702,6 +707,11 @@ next-tick@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
   integrity sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==
+
+node-datetime@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/node-datetime/-/node-datetime-2.1.2.tgz#657962039f88a87a94e26c2f65c88f278953f697"
+  integrity sha512-eev1F0IPKSu3zvASMtH8ic4znGpfXdq9yc8yc/EVx6bk57u7bS2iZKVZ8ll1ZeH/IEQ3qFb04FB70PCNXSIp4w==
 
 node-fetch@2.6.7:
   version "2.6.7"

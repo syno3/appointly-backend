@@ -10,6 +10,7 @@ import {
   updateProfile,
   postMember,
   postAppointment,
+  lipaNaMpesaOnline,
   getMeetings,
   getMeeting,
   getPersonal,
@@ -24,9 +25,11 @@ import {
   insertPersonal,
   updateUser,
   updateSchedule,
-} from "../controllers/get.js";
+} from "../controllers/get.js"; // get routes for the controllers
 
-import { nocache, generateRTCToken } from "../controllers/agora.cjs";
+import { nocache, generateRTCToken } from "../controllers/agora.cjs"; // agora tokenn server
+
+import { MpesaToken } from "../middleware/middleware.js"; // token generator for mepsa
 
 const router = express.Router();
 
@@ -56,6 +59,10 @@ router.post("/postMember", postMember);
 router.post("/updateMember", updateMember);
 router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", updateProfile);
+router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
+router.post("/lipaNaMpesaOnline", lipaNaMpesaOnline);
+
+
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);

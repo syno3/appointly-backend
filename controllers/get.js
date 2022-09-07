@@ -1,6 +1,9 @@
 import { supabase } from "../utils/supabaseClient.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { Mpesa } from "mpesa-api";
+import datetime from 'node-datetime';
+import axios from 'axios';
 
 export const testUser = async (req, res) => {
   res
@@ -809,3 +812,76 @@ export const updateProfile = async (req, res) => {
     })
     .status(200);
 };
+
+// lipa na mpesa STK push
+export const lipaNaMpesaOnline = async (req, res) => {
+  const token = req.mpesaToken
+  console.log(token)
+  const auth = "Bearer " + token;
+  const dt = datetime.create();
+
+  const timestamp = dt.format('YmdHMS')// datetime
+  const lipaNaMpesaUrl = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+  const bs_short_code = process.env.MPESA_BUSINESS_SHORT_CODE
+  const passkey = process.env.MPESA_PASSKEY
+
+
+  const password = new Buffer.from(bs_short_code + passkey + timestamp).toString('base64')
+  const transaction_type = "CustomerPayBillOnline"
+  const amount = "1"
+  const party_a = "254725169881" // phone number making the payment
+  const party_b = bs_short_code // business short code
+  const phone_number = party_a
+  const callback_url = "https://mydomain.com/lipaNaMpesaOnline" //!dont forget to change this
+  const account_reference = "Appointly-live"
+  const transaction_desc = "lipa na mpesa Appointly-live sandbox"
+
+  try{
+    const { data } = await axios.post(lipaNaMpesaUrl, {
+      "BusinessShortCode": bs_short_code,
+      "Password": password,
+      "Timestamp": timestamp,
+      "TransactionType": transaction_type,
+      "Amount": amount,
+      "PartyA": party_a,
+      "PartyB": party_b,
+      "PhoneNumber": phone_number,
+      "CallBackURL": callback_url,
+      "AccountReference": account_reference,
+      "TransactionDesc": transaction_desc
+    }, {
+      headers: {
+        'Authorization': auth
+      }
+    }).catch((error) => {
+      console.log(error)
+      return res
+        .json({ 
+          code: "400",
+          message: "error making lipaNaMpesa request",
+          error
+        })
+        .status(400)
+    })
+
+    console.log(data)
+
+  } catch (error) {
+    console.log(error)
+    return res
+    .json({
+      code: "400",
+      error,
+    }).status(400);
+  }
+
+}
+
+// callback url where message from mpesa made
+export const lipaNaMpesaCallback = async (req, res) => {
+  const message = req.body.Body.stkCallback.ResultDesc
+  return res.json({
+    code: "200",
+    message
+  }).status(200)
+}
