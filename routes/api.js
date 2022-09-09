@@ -10,6 +10,8 @@ import {
   updateProfile,
   postMember,
   postAppointment,
+  lipaNaMpesaOnline,
+  lipaNaMpesaCallback,
   getMeetings,
   getMeeting,
   getPersonal,
@@ -24,14 +26,25 @@ import {
   insertPersonal,
   updateUser,
   updateSchedule,
-} from "../controllers/get.js";
+} from "../controllers/get.js"; // get routes for the controllers
 
-import { nocache, generateRTCToken } from "../controllers/agora.cjs";
+import { nocache, generateRTCToken } from "../controllers/agora.cjs"; // agora tokenn server
+
+import { MpesaToken } from "../middleware/middleware.js"; // token generator for mepsa
+import {
+  sendEmail,
+  thanksForSignup,
+  appointmentConfirmation,
+  clientBookedAppointment,
+  meetingConfirmation,
+  inviteSignedUpForMeeting,
+} from "../controllers/emails.js"; // email templates
 
 const router = express.Router();
 
 //get routes
-router.get("/", testUser);
+router.get("/", testUser, meetingConfirmation, inviteSignedUpForMeeting); // test route
+
 router.get("/getMeetings", getMeetings);
 router.get("/getMeeting", getMeeting);
 router.get("/getPersonal", getPersonal);
@@ -47,15 +60,29 @@ router.post("/login", login);
 router.post("/signup", signUp);
 router.post("/createMeeting", createMeeting);
 router.post("/getMeetingHomepage", getMeetingHomepage);
-router.post("/insertPersonal", insertPersonal);
+router.post(
+  "/insertPersonal",
+  insertPersonal,
+  meetingConfirmation,
+  inviteSignedUpForMeeting
+);
 router.post("/postClient", postClient);
-router.post("/postAppointment", postAppointment);
+
+// TODO : GET REQ DETAILS FROM POSTAPPOINTMENT
+router.post(
+  "/postAppointment",
+  postAppointment,
+  appointmentConfirmation,
+  clientBookedAppointment
+);
 router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", postSchedule);
 router.post("/postMember", postMember);
-router.post("/updateMember", updateMember);
+router.post("/updateMember", updateMember, thanksForSignup);
 router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", updateProfile);
+router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
+router.post("/lipaNaMpesaCallback", lipaNaMpesaCallback);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);

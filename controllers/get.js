@@ -1,14 +1,24 @@
 import { supabase } from "../utils/supabaseClient.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import datetime from "node-datetime";
+import axios from "axios";
 
-export const testUser = async (req, res) => {
+export const testUser = async (req, res, next) => {
   res
     .json({
       code: "200",
       message: "route works successfully",
     })
     .status(200);
+
+  req.body = {
+    meeting_id: "548eceea-5983-451c-9280-eac85647c882",
+    first_name: "festus",
+    email: "murimifestus09@gmail.com",
+    amount_paid: "100",
+  };
+  return next();
 };
 
 // sign in a user with their password
@@ -309,7 +319,7 @@ export const getMeetingHomepage = async (req, res) => {
 };
 
 // insert personal details to invites
-export const insertPersonal = async (req, res) => {
+export const insertPersonal = async (req, res, next) => {
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
   const email = req.body.email;
@@ -341,12 +351,21 @@ export const insertPersonal = async (req, res) => {
       .status(400);
   }
 
-  return res
+  res
     .json({
       code: "200",
       message: "personal details update successfully",
     })
     .status(200);
+
+  req.body = {
+    meeting_id: meeting_id,
+    email: email,
+    first_name: firstname,
+    amount_paid: amount_paid,
+  };
+
+  return next();
 };
 
 // get personal details dashboard //
@@ -535,7 +554,7 @@ export const postClient = async (req, res) => {
 };
 
 // post new appointment
-export const postAppointment = async (req, res) => {
+export const postAppointment = async (req, res, next) => {
   const { member_id, client_id, status, schedule_id } = req.body;
   //we create appointment
   const { data: appointment, error } = await supabase
@@ -574,14 +593,21 @@ export const postAppointment = async (req, res) => {
       })
       .status(400);
   }
-  return res
+  res
     .json({
       code: "200",
       message: "appointment added successfully",
       appointment_id,
     })
     .status(200);
+
+  req.body = {
+    client_id: client_id,
+    schedule_id: schedule_id,
+  };
+  return next();
 };
+
 // update schedule to include appointment id
 export const updateSchedule = async (req, res) => {
   const { schedule_id, appointment_id } = req.body;
@@ -712,11 +738,8 @@ export const postMember = async (req, res) => {
 };
 
 // upate created member with additional information
-export const updateMember = async (req, res) => {
-  console.log("updating user ..........");
+export const updateMember = async (req, res, next) => {
   const { first_name, last_name, ip_address, id, email } = req.body;
-
-  console.log(first_name, last_name, ip_address, id, email);
 
   const { data: Member, error } = await supabase
     .from("Members")
@@ -739,13 +762,14 @@ export const updateMember = async (req, res) => {
       .status(400);
   }
 
-  console.log("updated user ..........");
-
-  return res.json({
+  res.json({
     code: "200",
     message: "member updated successfully",
     Member,
   });
+
+  req.email = email; // set email to req object
+  return next(); // call next middleware
 };
 
 // update user profile details
@@ -808,4 +832,125 @@ export const updateProfile = async (req, res) => {
       Member,
     })
     .status(200);
+};
+// lipa na mpesa STK push
+export const lipaNaMpesaOnline = async (req, res) => {
+  const { amount_paid, phone, account_ref, transaction_description } = req.body;
+
+  const token = req.mpesaToken;
+  console.log(token);
+  const auth = "Bearer " + token;
+  const dt = datetime.create();
+
+  const timestamp = dt.format("YmdHMS"); // datetime
+  const lipaNaMpesaUrl =
+    "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+  const bs_short_code = process.env.MPESA_BUSINESS_SHORT_CODE;
+  const passkey = process.env.MPESA_PASSKEY;
+
+  const password = new Buffer.from(
+    bs_short_code + passkey + timestamp
+  ).toString("base64");
+  const transaction_type = "CustomerPayBillOnline";
+  const amount = `${amount_paid}`;
+  const party_a = `${phone}`; // phone number making the payment
+  const party_b = bs_short_code; // business short code
+  const phone_number = party_a;
+  const callback_url =
+    "https://appointly-backend.vercel.app/api/lipaNaMpesaCallback";
+  const account_reference = `${account_ref}`;
+  const transaction_desc = `${transaction_description}`;
+
+  const requestData = {
+    BusinessShortCode: bs_short_code,
+    Password: password,
+    Timestamp: timestamp,
+    TransactionType: transaction_type,
+    Amount: amount,
+    PartyA: party_a,
+    PartyB: party_b,
+    PhoneNumber: phone_number,
+    CallBackURL: callback_url,
+    AccountReference: account_reference,
+    TransactionDesc: transaction_desc,
+  };
+
+  try {
+    const response = await axios.post(lipaNaMpesaUrl, requestData, {
+      insecureHTTPParser: true,
+      headers: {
+        Authorization: auth,
+      },
+    });
+    const data = response.data;
+
+    const details = {
+      BusinessShortCode: bs_short_code,
+      password: password,
+      timestamp: timestamp,
+      CheckoutRequestID: data.CheckoutRequestID,
+      auth: auth,
+    };
+
+    return res
+      .json({
+        code: "200",
+        message: "lipa na mpesa online initiated successfully",
+        data,
+        details,
+      })
+      .status(200);
+  } catch (error) {
+    console.log(error);
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+};
+
+// callback url where message from mpesa made
+export const lipaNaMpesaCallback = async (req, res) => {
+  const { BusinessShortCode, password, timestamp, CheckoutRequestID, auth } =
+    req.body;
+  const data = {
+    BusinessShortCode: BusinessShortCode,
+    Password: password,
+    Timestamp: timestamp,
+    CheckoutRequestID: CheckoutRequestID,
+  };
+
+  console.log(data);
+  try {
+    const response = await axios.post(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
+      data,
+      {
+        insecureHTTPParser: true,
+        headers: {
+          Authorization: auth,
+        },
+      }
+    );
+
+    const details = response.data;
+
+    return res
+      .json({
+        code: "200",
+        message: "lipa na mpesa online detailed fetched successfully",
+        details,
+      })
+      .status(200);
+  } catch (error) {
+    console.log(error);
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
 };
