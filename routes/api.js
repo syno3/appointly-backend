@@ -31,15 +31,14 @@ import {
 import { nocache, generateRTCToken } from "../controllers/agora.cjs"; // agora tokenn server
 
 import { MpesaToken } from "../middleware/middleware.js"; // token generator for mepsa
-import { 
+import {
   sendEmail,
   thanksForSignup,
   appointmentConfirmation,
   clientBookedAppointment,
   meetingConfirmation,
-  inviteSignedUpForMeeting
+  inviteSignedUpForMeeting,
 } from "../controllers/emails.js"; // email templates
-
 
 const router = express.Router();
 
@@ -61,11 +60,21 @@ router.post("/login", login);
 router.post("/signup", signUp);
 router.post("/createMeeting", createMeeting);
 router.post("/getMeetingHomepage", getMeetingHomepage);
-router.post("/insertPersonal", insertPersonal, meetingConfirmation, inviteSignedUpForMeeting);
+router.post(
+  "/insertPersonal",
+  insertPersonal,
+  meetingConfirmation,
+  inviteSignedUpForMeeting
+);
 router.post("/postClient", postClient);
 
 // TODO : GET REQ DETAILS FROM POSTAPPOINTMENT
-router.post("/postAppointment", postAppointment, appointmentConfirmation, clientBookedAppointment);
+router.post(
+  "/postAppointment",
+  postAppointment,
+  appointmentConfirmation,
+  clientBookedAppointment
+);
 router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", postSchedule);
 router.post("/postMember", postMember);

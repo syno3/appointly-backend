@@ -17,7 +17,7 @@ export const MpesaToken = async (req, res, next) => {
 
   try {
     const { data } = await axios.get(url, {
-      insecureHTTPParser : true,
+      insecureHTTPParser: true,
       headers: {
         Authorization: auth,
       },
@@ -34,4 +34,3 @@ export const MpesaToken = async (req, res, next) => {
     });
   }
 };
-

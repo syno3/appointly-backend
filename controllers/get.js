@@ -6,18 +6,18 @@ import axios from "axios";
 
 export const testUser = async (req, res, next) => {
   res
-  .json({
-    code: "200",
-    message: "route works successfully",
-  })
-  .status(200);
+    .json({
+      code: "200",
+      message: "route works successfully",
+    })
+    .status(200);
 
   req.body = {
-    meeting_id : "548eceea-5983-451c-9280-eac85647c882",
-    first_name : "festus",
-    email : "murimifestus09@gmail.com",
-    amount_paid : "100"
-  }
+    meeting_id: "548eceea-5983-451c-9280-eac85647c882",
+    first_name: "festus",
+    email: "murimifestus09@gmail.com",
+    amount_paid: "100",
+  };
   return next();
 };
 
@@ -320,7 +320,6 @@ export const getMeetingHomepage = async (req, res) => {
 
 // insert personal details to invites
 export const insertPersonal = async (req, res, next) => {
-
   const firstname = req.body.firstname;
   const lastname = req.body.lastname;
   const email = req.body.email;
@@ -359,14 +358,14 @@ export const insertPersonal = async (req, res, next) => {
     })
     .status(200);
 
-    req.body = {
-      meeting_id : meeting_id,
-      email : email,
-      first_name : firstname,
-      amount_paid : amount_paid
-    }
+  req.body = {
+    meeting_id: meeting_id,
+    email: email,
+    first_name: firstname,
+    amount_paid: amount_paid,
+  };
 
-    return next();
+  return next();
 };
 
 // get personal details dashboard //
@@ -602,11 +601,11 @@ export const postAppointment = async (req, res, next) => {
     })
     .status(200);
 
-    req.body = {
-      client_id: client_id,
-      schedule_id: schedule_id,
-    };
-    return next();
+  req.body = {
+    client_id: client_id,
+    schedule_id: schedule_id,
+  };
+  return next();
 };
 
 // update schedule to include appointment id
@@ -863,18 +862,18 @@ export const lipaNaMpesaOnline = async (req, res) => {
   const transaction_desc = `${transaction_description}`;
 
   const requestData = {
-      BusinessShortCode: bs_short_code,
-      Password: password,
-      Timestamp: timestamp,
-      TransactionType: transaction_type,
-      Amount: amount,
-      PartyA: party_a,
-      PartyB: party_b,
-      PhoneNumber: phone_number,
-      CallBackURL: callback_url,
-      AccountReference: account_reference,
-      TransactionDesc: transaction_desc,
-  }
+    BusinessShortCode: bs_short_code,
+    Password: password,
+    Timestamp: timestamp,
+    TransactionType: transaction_type,
+    Amount: amount,
+    PartyA: party_a,
+    PartyB: party_b,
+    PhoneNumber: phone_number,
+    CallBackURL: callback_url,
+    AccountReference: account_reference,
+    TransactionDesc: transaction_desc,
+  };
 
   try {
     const response = await axios.post(lipaNaMpesaUrl, requestData, {
@@ -882,24 +881,25 @@ export const lipaNaMpesaOnline = async (req, res) => {
       headers: {
         Authorization: auth,
       },
-    })
-    const data = response.data
+    });
+    const data = response.data;
 
     const details = {
-      BusinessShortCode : bs_short_code,
-      password : password,
-      timestamp : timestamp,
-      CheckoutRequestID : data.CheckoutRequestID,
-      auth : auth,
-    }
+      BusinessShortCode: bs_short_code,
+      password: password,
+      timestamp: timestamp,
+      CheckoutRequestID: data.CheckoutRequestID,
+      auth: auth,
+    };
 
-    return res.json({
-      code: "200",
-      message: "lipa na mpesa online initiated successfully",
-      data,
-      details,
-    }).status(200);
-
+    return res
+      .json({
+        code: "200",
+        message: "lipa na mpesa online initiated successfully",
+        data,
+        details,
+      })
+      .status(200);
   } catch (error) {
     console.log(error);
     return res
@@ -911,34 +911,39 @@ export const lipaNaMpesaOnline = async (req, res) => {
   }
 };
 
-
 // callback url where message from mpesa made
 export const lipaNaMpesaCallback = async (req, res) => {
-  const { BusinessShortCode, password, timestamp, CheckoutRequestID, auth } = req.body;
+  const { BusinessShortCode, password, timestamp, CheckoutRequestID, auth } =
+    req.body;
   const data = {
-    BusinessShortCode : BusinessShortCode,
-    Password : password,
-    Timestamp : timestamp,
-    CheckoutRequestID : CheckoutRequestID,
-  }
+    BusinessShortCode: BusinessShortCode,
+    Password: password,
+    Timestamp: timestamp,
+    CheckoutRequestID: CheckoutRequestID,
+  };
 
-  console.log(data)
-  try{
-    const response = await axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query', data,{
-      insecureHTTPParser: true,
-      headers: {
-        Authorization: auth,
-      },
-    })
+  console.log(data);
+  try {
+    const response = await axios.post(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
+      data,
+      {
+        insecureHTTPParser: true,
+        headers: {
+          Authorization: auth,
+        },
+      }
+    );
 
-    const details = response.data
+    const details = response.data;
 
-    return res.json({
-      code: "200",
-      message: "lipa na mpesa online detailed fetched successfully",
-      details,
-    }).status(200);
-
+    return res
+      .json({
+        code: "200",
+        message: "lipa na mpesa online detailed fetched successfully",
+        details,
+      })
+      .status(200);
   } catch (error) {
     console.log(error);
     return res
