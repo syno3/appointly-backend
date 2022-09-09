@@ -33,6 +33,9 @@
     "jsonwebtoken": "^8.5.1",
     "mpesa-api": "^3.0.2",
     "node-datetime": "^2.1.2",
+    "node-fetch": "^3.2.10",
+    "nodemailer": "^6.7.8",
+    "nodemailer-mailgun-transport": "^2.1.4",
     "nodemon": "^2.0.19"
   },
   "type": "module",
