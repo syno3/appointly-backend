@@ -1018,3 +1018,30 @@ export const lipaNaMpesaB2C = async (req, res) => {
       .status(400);
   }
 };
+
+
+// deduct from the member account amount withdrawn
+export const deductFromMemberAccount = async (req, res) => {
+  const { member_id, balance } = req.body;
+
+  const { data: member, error } = await supabase
+    .from("Members")
+    .update({ withdrawable_balance: balance })
+    .eq("id", member_id);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+  return res
+    .json({
+      code: "200",
+      message: "member account updated successfully",
+      member,
+    })
+    .status(200);
+};
