@@ -53,7 +53,7 @@ router.get("/getAppointments", getAppointments);
 router.get("/getClients", getClients);
 router.get("/getAmount", getAmount);
 router.get("/getBasic", getBasic);
-router.get("/rtc", nocache, generateRTCToken);
+router.get("/rtc", nocache, generateRTCToken); // ? agora rtc token
 
 //post routes
 router.post("/login", login);
@@ -67,8 +67,6 @@ router.post(
   inviteSignedUpForMeeting
 );
 router.post("/postClient", postClient);
-
-// TODO : GET REQ DETAILS FROM POSTAPPOINTMENT
 router.post(
   "/postAppointment",
   postAppointment,

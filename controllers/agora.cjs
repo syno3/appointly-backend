@@ -16,7 +16,7 @@ const nocache = (_, res, next) => {
 
 const generateRTCToken = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
-  const channelName = req.query.channelName;
+  let channelName = req.query.channelName;
   if (!channelName) {
     return res
       .json({
@@ -26,17 +26,14 @@ const generateRTCToken = (req, res) => {
       .status(500);
   }
 
-  const uuid = req.query.uuid;
-  if (!uuid || uuid == "") {
-    uuid = 0;
-  }
+  let uuid = req.query.uuid;
 
-  const role = RtcRole.SUBSCRIBER;
+  let role = RtcRole.SUBSCRIBER;
   if (req.query.role == "publisher") {
     role = RtcRole.PUBLISHER;
   }
 
-  const expirationTimeInSeconds = 3600; // expire after 1 hr
+  const expirationTimeInSeconds = 36000; // expire after 10 hours
 
   const currentTimestamp = Math.floor(Date.now() / 1000);
   const token = RtcTokenBuilder.buildTokenWithUid(
