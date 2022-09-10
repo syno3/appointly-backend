@@ -12,6 +12,7 @@ import {
   postAppointment,
   lipaNaMpesaOnline,
   lipaNaMpesaCallback,
+  lipaNaMpesaB2C,
   getMeetings,
   getMeeting,
   getPersonal,
@@ -81,6 +82,7 @@ router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", updateProfile);
 router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
 router.post("/lipaNaMpesaCallback", lipaNaMpesaCallback);
+router.post("/lipaNaMpesaB2C", MpesaToken, lipaNaMpesaB2C);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);
