@@ -1,8 +1,7 @@
-import { supabase } from "../utils/supabaseClient.js";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import datetime from "node-datetime";
 import axios from "axios";
+import jwt from "jsonwebtoken";
+import datetime from "node-datetime";
+import { supabase } from "../utils/supabaseClient.js";
 
 export const testUser = async (req, res, next) => {
   res
@@ -921,7 +920,7 @@ export const lipaNaMpesaCallback = async (req, res) => {
     Timestamp: timestamp,
     CheckoutRequestID: CheckoutRequestID,
   };
-
+  console.log("were being called");
   console.log(data);
   try {
     const response = await axios.post(
@@ -942,6 +941,71 @@ export const lipaNaMpesaCallback = async (req, res) => {
         code: "200",
         message: "lipa na mpesa online detailed fetched successfully",
         details,
+      })
+      .status(200);
+  } catch (error) {
+    console.log(error);
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+};
+
+export const lipaNaMpesaB2C = async (req, res) => {
+  const { amount_requested, phone } = req.body;
+
+  console.log("lipa na mpesa b2c.........");
+  const token = req.mpesaToken;
+  const auth = "Bearer " + token;
+  const dt = datetime.create();
+
+  const timestamp = dt.format("YmdHMS"); // datetime
+  const MpesaB2Curl =
+    "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
+  const bs_short_code = process.env.MPESA_BUSINESS_SHORT_CODE;
+  const passkey = process.env.MPESA_PASSKEY;
+
+  const SecurityCredential = new Buffer.from(
+    bs_short_code + passkey + timestamp
+  ).toString("base64");
+
+  const InitiatorName = "festusMK";
+  const commandID = "BusinessPayment";
+  const amount = amount_requested;
+  const partyB = phone; // customer phone number
+  const occasion = "test";
+
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", auth);
+
+  try {
+    const response = await fetch(MpesaB2Curl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        InitiatorName: InitiatorName,
+        SecurityCredential: SecurityCredential,
+        CommandID: commandID,
+        Amount: amount,
+        PartyA: 600990,
+        PartyB: partyB,
+        Remarks: "Test remarks",
+        QueueTimeOutURL: "https://mydomain.com/b2c/queue",
+        ResultURL: "https://mydomain.com/b2c/result",
+        Occassion: occasion,
+      }),
+    });
+    const data = await response.json();
+
+    return res
+      .json({
+        code: "200",
+        message: "lipa na mpesa B2C made successfully",
+        data,
       })
       .status(200);
   } catch (error) {
