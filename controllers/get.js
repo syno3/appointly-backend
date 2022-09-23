@@ -20,76 +20,6 @@ export const testUser = async (req, res, next) => {
   return next();
 };
 
-// sign in a user with their password
-export const login = async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  console.log(email, password);
-  const { user, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password,
-  });
-
-  if (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
-
-  let { data: id, error1 } = await supabase
-    .from("Members")
-    .select("id")
-    .eq("email", email)
-    .single();
-
-  if (error1) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
-
-  const details = { user: id };
-
-  /// generate a token for the user query database for email and return id
-  const token = jwt.sign(details, process.env.ACESS_TOKEN_SECRET);
-
-  return res
-    .send({
-      code: "200",
-      message: "user logged in",
-      id,
-    })
-    .status(200);
-};
-
-//sign up a user
-export const signUp = async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const { user, error } = await supabase.auth.signUp({
-    email: email,
-    password: password,
-  });
-
-  if (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
-
-  return res.send(user).status(200);
-};
-
 // upload image to bucket and get public url
 export const uploadImage = async (req, res) => {
   console.log("uploading image............");
@@ -368,6 +298,7 @@ export const insertPersonal = async (req, res, next) => {
 };
 
 // get personal details dashboard //
+// TODO : GET DETAILS FROM ACCESS TOKEN
 export const getPersonal = async (req, res) => {
   const user = req.body.user;
   const { data, error } = await supabase
@@ -386,40 +317,6 @@ export const getPersonal = async (req, res) => {
 
   return res.send(data).status(200);
 };
-
-//update user details
-export const updateUser = async (req, res) => {
-  const user = req.body.user;
-  const first_name = req.body.firstName;
-  const last_name = req.body.lastName;
-  const photoUrl = req.body.photoUrl;
-
-  const { data, error } = await supabase
-    .from("Members")
-    .update([
-      {
-        first_Name: first_name,
-        last_Name: last_name,
-        photoUrl: photoUrl,
-      },
-    ])
-    .eq("id", user);
-
-  if (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
-
-  return res.json({
-    code: "200",
-    message: "details updated successfully",
-  });
-};
-
 // get list of all schedules from a member
 export const getSchedules = async (req, res) => {
   const owner = req.query.q; // please note that this is a query not a body
@@ -832,7 +729,7 @@ export const updateProfile = async (req, res) => {
     })
     .status(200);
 };
-// lipa na mpesa STK push 
+// lipa na mpesa STK push
 export const lipaNaMpesaOnline = async (req, res) => {
   const { amount_paid, phone, account_ref, transaction_description } = req.body;
 
@@ -844,7 +741,8 @@ export const lipaNaMpesaOnline = async (req, res) => {
   const timestamp = dt.format("YmdHMS"); // datetime
   const lipaNaMpesaUrl =
     "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
-  const lipaNaMpesaSandbox = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest" /// mpesa url sandbox
+  const lipaNaMpesaSandbox =
+    "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"; /// mpesa url sandbox
   const bs_short_code = process.env.MPESA_BUSINESS_SHORT_CODE;
   const passkey = process.env.MPESA_PASSKEY;
 
@@ -857,7 +755,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
   const party_b = bs_short_code; // business short code
   const phone_number = party_a;
   const callback_url =
-    "https://appointly-backend.vercel.app/api/lipaNaMpesaCallback";
+    "https://appointly-backend.vercel.app/api/lipaNaMpesaWebHook"; // callback url
   const account_reference = `${account_ref}`;
   const transaction_desc = `${transaction_description}`;
 
@@ -875,7 +773,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
     TransactionDesc: transaction_desc,
   };
 
-  console.log(requestData)
+  console.log(requestData);
 
   try {
     const response = await axios.post(lipaNaMpesaUrl, requestData, {
@@ -911,6 +809,11 @@ export const lipaNaMpesaOnline = async (req, res) => {
       })
       .status(400);
   }
+};
+
+// webhook for lipa na mpesa
+export const lipaNaMpesaWebHook = async (req, res) => {
+  
 };
 
 // callback url where message from mpesa made
@@ -957,32 +860,28 @@ export const lipaNaMpesaCallback = async (req, res) => {
   }
 };
 
-
-
-
-
-// deduct from the member account amount withdrawn
-export const deductFromMemberAccount = async (req, res) => {
-  const { member_id, balance } = req.body;
-
-  const { data: member, error } = await supabase
-    .from("Members")
-    .update({ withdrawable_balance: balance })
-    .eq("id", member_id);
-
-  if (error) {
+export const createSlackMessage = async (req, res) => {
+  const { amount_requested, phone } = req.body;
+  const url =
+    "https://hooks.slack.com/services/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";
+  try {
+    const response = await axios.post(url, {
+      text: `A user with phone number ${phone} has requested to withdraw ${amount_requested} from their account`,
+    });
+    const data = response.data;
+    return res
+      .json({
+        code: "200",
+        message: "slack message sent successfully",
+        data,
+      })
+      .status(200);
+  } catch (err) {
     return res
       .json({
         code: "400",
-        error,
+        error: err,
       })
       .status(400);
   }
-  return res
-    .json({
-      code: "200",
-      message: "member account updated successfully",
-      member,
-    })
-    .status(200);
 };
