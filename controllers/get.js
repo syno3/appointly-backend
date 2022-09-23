@@ -20,6 +20,40 @@ export const testUser = async (req, res, next) => {
   return next();
 };
 
+//update user details
+// ? authenticated with supabase auth
+export const updateUser = async (req, res) => {
+  const user = req.body.user;
+  const first_name = req.body.firstName;
+  const last_name = req.body.lastName;
+  const photoUrl = req.body.photoUrl;
+
+  const { data, error } = await supabase
+    .from("Members")
+    .update([
+      {
+        first_Name: first_name,
+        last_Name: last_name,
+        photoUrl: photoUrl,
+      },
+    ])
+    .eq("id", user);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res.json({
+    code: "200",
+    message: "details updated successfully",
+  });
+};
+
 // upload image to bucket and get public url
 export const uploadImage = async (req, res) => {
   console.log("uploading image............");
@@ -52,6 +86,7 @@ export const uploadImage = async (req, res) => {
 };
 
 //create a new meeting
+// ? authenticated with supabase auth
 export const createMeeting = async (req, res) => {
   console.log("uploading meeting............");
   const title = req.body.title;
@@ -136,6 +171,7 @@ export const createMeeting = async (req, res) => {
 };
 
 //get all meetings that user created
+// ? authenticated with supabase auth
 export const getMeetings = async (req, res) => {
   const owner = req.query.owner;
 
@@ -532,6 +568,7 @@ export const updateSchedule = async (req, res) => {
 };
 
 // get amount information from members table
+// ? authenticated with supabase auth
 export const getAmount = async (req, res) => {
   const user = req.query.user; // please note that this is a query not a body
   const { data: Member, error } = await supabase
@@ -555,6 +592,7 @@ export const getAmount = async (req, res) => {
 };
 
 // get basic information from members table
+// ? authenticated with supabase auth
 export const getBasic = async (req, res) => {
   const user = req.query.user; // please note that this is a query not a body
   const { data: Member, error } = await supabase
@@ -578,6 +616,7 @@ export const getBasic = async (req, res) => {
 };
 
 // create new schedule
+// ? authenticated with supabase auth
 export const postSchedule = async (req, res) => {
   const link = req.body.link;
   const data = req.body.scheduled;
@@ -604,71 +643,8 @@ export const postSchedule = async (req, res) => {
     .status(200);
 };
 
-// signup new member
-export const postMember = async (req, res) => {
-  console.log("creating user ..........");
-
-  const { email, password } = req.body;
-
-  const { data: user, error } = await supabase.auth.signUp({
-    email: email,
-    password: password,
-  });
-
-  if (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
-
-  console.log("user created successfully");
-
-  return res.json({
-    code: "200",
-    message: "member added successfully",
-    user,
-  });
-};
-
-// upate created member with additional information
-export const updateMember = async (req, res, next) => {
-  const { first_name, last_name, ip_address, id, email } = req.body;
-
-  const { data: Member, error } = await supabase
-    .from("Members")
-    .update([
-      {
-        first_name: first_name,
-        last_name: last_name,
-        ip_address: ip_address,
-        email: email,
-      },
-    ])
-    .eq("id", id);
-
-  if (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
-
-  res.json({
-    code: "200",
-    message: "member updated successfully",
-    Member,
-  });
-
-  req.email = email; // set email to req object
-  return next(); // call next middleware
-};
-
 // update user profile details
+// ? authenticated with supabase auth
 export const updateProfile = async (req, res) => {
   const {
     id,
@@ -816,7 +792,7 @@ export const lipaNaMpesaWebHook = async (req, res) => {
   
 };
 
-// callback url where message from mpesa made
+// confirm the payment made
 export const lipaNaMpesaCallback = async (req, res) => {
   const { BusinessShortCode, password, timestamp, CheckoutRequestID, auth } =
     req.body;
@@ -860,6 +836,7 @@ export const lipaNaMpesaCallback = async (req, res) => {
   }
 };
 
+// ? authenticated with supabase api
 export const createSlackMessage = async (req, res) => {
   const { amount_requested, phone } = req.body;
   const url =
