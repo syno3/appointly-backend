@@ -86,7 +86,7 @@ export const uploadImage = async (req, res) => {
 };
 
 //create a new meeting
-// ? authenticated with supabase auth
+// ! working with authorization
 export const createMeeting = async (req, res) => {
   console.log("uploading meeting............");
   const title = req.body.title;
@@ -171,7 +171,7 @@ export const createMeeting = async (req, res) => {
 };
 
 //get all meetings that user created
-// ? authenticated with supabase auth
+// ! working with authorization
 export const getMeetings = async (req, res) => {
   const owner = req.query.owner;
 
@@ -205,7 +205,14 @@ export const getMeeting = async (req, res) => {
   const id = req.query.id; //id of meeting in query
   const { data: meeting, error } = await supabase
     .from("Meetings")
-    .select("*")
+    .select(`*
+    ,owner (
+      id,
+      first_name,
+      last_name,
+      photoUrl
+    )
+    `)
     .eq("id", id);
 
   if (error) {
@@ -487,9 +494,9 @@ export const postClient = async (req, res) => {
 
 // post new appointment
 export const postAppointment = async (req, res, next) => {
-  const { member_id, client_id, status, schedule_id } = req.body;
+  const { member_id, client_id, status, schedule_id, date } = req.body;
   //we create appointment
-  const { data: appointment, error } = await supabase
+  const { data, error } = await supabase
     .from("Appointment")
     .insert([
       {
@@ -497,8 +504,11 @@ export const postAppointment = async (req, res, next) => {
         status: status,
         client_id: client_id,
         schedule_id: schedule_id,
+        date : date
       },
     ]);
+
+    console.log(data)
 
   if (error) {
     return res
@@ -513,9 +523,7 @@ export const postAppointment = async (req, res, next) => {
   const { data: appointment_id, error1 } = await supabase
     .from("Appointment")
     .select("id")
-    .eq("member_id", member_id)
-    .eq("client_id", client_id)
-    .eq("schedule_id", schedule_id);
+    .eq("date", date)
 
   if (error1) {
     return res
@@ -536,6 +544,7 @@ export const postAppointment = async (req, res, next) => {
   req.body = {
     client_id: client_id,
     schedule_id: schedule_id,
+    date,
   };
   return next();
 };
@@ -616,7 +625,7 @@ export const getBasic = async (req, res) => {
 };
 
 // create new schedule
-// ? authenticated with supabase auth
+// ! working with authorization
 export const postSchedule = async (req, res) => {
   const link = req.body.link;
   const data = req.body.scheduled;
@@ -836,7 +845,7 @@ export const lipaNaMpesaCallback = async (req, res) => {
   }
 };
 
-// ? authenticated with supabase api
+// ! working with authorization
 export const createSlackMessage = async (req, res) => {
   const { amount_requested, phone } = req.body;
   const url =

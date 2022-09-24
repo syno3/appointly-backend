@@ -42,7 +42,7 @@ const router = express.Router();
 //get routes
 router.get("/", testUser, meetingConfirmation, inviteSignedUpForMeeting); // test route
 router.get("/getMeetings", authenticateToken, getMeetings);
-router.get("/getMeeting", authenticateToken, getMeeting);
+router.get("/getMeeting", getMeeting);
 router.get("/getPersonal",authenticateToken, getPersonal);
 router.get("/getSchedules", getSchedules);
 router.get("/getAppointments", getAppointments);
