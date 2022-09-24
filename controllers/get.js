@@ -568,7 +568,7 @@ export const updateSchedule = async (req, res) => {
 };
 
 // get amount information from members table
-// ? authenticated with supabase auth
+// ! working with authorization
 export const getAmount = async (req, res) => {
   const user = req.query.user; // please note that this is a query not a body
   const { data: Member, error } = await supabase
@@ -592,7 +592,7 @@ export const getAmount = async (req, res) => {
 };
 
 // get basic information from members table
-// ? authenticated with supabase auth
+// ! working with authorization
 export const getBasic = async (req, res) => {
   const user = req.query.user; // please note that this is a query not a body
   const { data: Member, error } = await supabase
@@ -644,7 +644,7 @@ export const postSchedule = async (req, res) => {
 };
 
 // update user profile details
-// ? authenticated with supabase auth
+// ! working with authorization
 export const updateProfile = async (req, res) => {
   const {
     id,
