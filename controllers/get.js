@@ -263,12 +263,14 @@ export const deleteMeeting = async (req, res) => {
 //check if a specific meeting exists
 //check if meeting has passed
 export const getMeetingHomepage = async (req, res) => {
-  const link = req.body.link;
+  const id = req.body.id;
   const date = Date.now();
   const { data, error } = await supabase
     .from("Meetings")
     .select("link, payment_amount, owner, id")
-    .eq("link", link);
+    .eq("id", id);
+
+
   if (Object.keys(data).length === 0) {
     return res
       .json({
@@ -628,11 +630,12 @@ export const getBasic = async (req, res) => {
 // ! working with authorization
 export const postSchedule = async (req, res) => {
   const link = req.body.link;
-  const data = req.body.scheduled;
+  const record = req.body.scheduled;
 
-  const { data: Schedule, error } = await supabase
+  // check if record exists and overrvide if it does
+  const { data, error } = await supabase
     .from("Schedule")
-    .insert(data);
+    .insert(record)
 
   if (error) {
     return res
@@ -647,7 +650,7 @@ export const postSchedule = async (req, res) => {
     .json({
       code: "200",
       message: "schedule added successfully",
-      Schedule,
+      data,
     })
     .status(200);
 };
