@@ -259,6 +259,74 @@ export const deleteMeeting = async (req, res) => {
     })
     .status(200);
 };
+// update meeting
+// TODO : ADD  TIME, DATE AND FILE UPDATE 
+export const updateMeeting = async (req, res) => {
+  const id = req.body.id;
+  const title = req.body.title;
+  const description = req.body.description;
+  const payment = req.body.payment;
+  const capacity = req.body.capacity;
+  const link = req.body.link;
+  const external_link = req.body.external_link;
+  const status = req.body.status;
+  const date = req.body.date;
+  const time = req.body.time;
+  const duration = req.body.duration;
+  const filename = req.body.filename;
+
+  // create signed url
+  if (filename) {
+    const { data: publicUrl, err } = await supabase.storage
+      .from("meetings")
+      .getPublicUrl(`${filename}`);
+  
+    if (err) {
+      return res
+        .json({
+          code: "400",
+          err,
+        })
+        .status(400);
+    }
+  }
+
+
+  const { data, error } = await supabase
+    .from("Meetings")
+    .update([
+      {
+        title: title,
+        description: description,
+        payment_amount: payment,
+        capacity: capacity,
+        link: link,
+        status: status,
+        duration: duration,
+        external_link: external_link,
+      },
+    ])
+    .eq("id", id);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .send({
+      code: "200",
+      message: "meeting updated successfully",
+      data,
+    })
+    .status(200);
+}
+
+
 
 //check if a specific meeting exists
 //check if meeting has passed

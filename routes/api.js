@@ -6,6 +6,7 @@ import {
   uploadImage,
   updateProfile,
   postAppointment,
+  updateMeeting,
   lipaNaMpesaOnline,
   lipaNaMpesaCallback,
   getMeetings,
@@ -69,6 +70,8 @@ router.post(
 );
 router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", authenticateToken, postSchedule);
+router.post("/updateMeeting", authenticateToken, updateMeeting);
+
 
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
 router.post("/thanksForSignup", thanksForSignup); 
