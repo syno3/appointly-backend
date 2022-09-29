@@ -262,6 +262,7 @@ export const deleteMeeting = async (req, res) => {
 // update meeting
 // TODO : ADD  TIME, DATE AND FILE UPDATE 
 export const updateMeeting = async (req, res) => {
+
   const id = req.body.id;
   const title = req.body.title;
   const description = req.body.description;
@@ -301,6 +302,8 @@ export const updateMeeting = async (req, res) => {
         payment_amount: payment,
         capacity: capacity,
         link: link,
+        date_start : date,
+        time : time,
         status: status,
         duration: duration,
         external_link: external_link,
