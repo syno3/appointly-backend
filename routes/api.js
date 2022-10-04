@@ -18,6 +18,7 @@ import {
   getAmount,
   getBasic,
   createMeeting,
+  createToken,
   createSlackMessage,
   deleteMeeting,
   getMeetingHomepage,
@@ -51,6 +52,8 @@ router.get("/getClients", getClients);
 router.get("/getAmount", authenticateToken, getAmount);
 router.get("/getBasic", authenticateToken, getBasic);
 router.get("/rtc", nocache, generateRTCToken); // ? agora rtc token
+router.get("/createToken", createToken);
+
 
 //post routes
 router.post("/createMeeting", authenticateToken, createMeeting);
