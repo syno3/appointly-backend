@@ -57,7 +57,7 @@ export const thanksForSignup = async (req, res) => {
 // appointment confirmation
 // TODO : CREATE LINK TO MEETING
 export const appointmentConfirmation = async (req, res, next) => {
-  const { client_id, schedule_id } = req.body;
+  const { client_id, schedule_id, date } = req.body;
 
   const { data: email, error } = await supabase
     .from("Client")
@@ -67,7 +67,7 @@ export const appointmentConfirmation = async (req, res, next) => {
   const { data: schedule, error: err } = await supabase
     .from("Schedule")
     .select(
-      `day, from, to,
+      `from, to,
     Members (
         email
     )
@@ -83,7 +83,7 @@ export const appointmentConfirmation = async (req, res, next) => {
     subject: "Heres your appointment",
     template: "confirmappointment-01",
     "h:X-Mailgun-Variables": JSON.stringify({
-      day: schedule[0].day,
+      day: date,
       start: schedule[0].from,
       end: schedule[0].to,
       link: "www.test.com", // ! we need to generate dynamic
@@ -99,7 +99,7 @@ export const appointmentConfirmation = async (req, res, next) => {
       console.log("appointment email sent");
       req.body = {
         client_id: client_id,
-        schedule_day: schedule[0].day,
+        schedule_day: date,
         schedule_start: schedule[0].from,
         schedule_end: schedule[0].to,
         schedule_link: "www.test.com", // we need to generate dynamic
