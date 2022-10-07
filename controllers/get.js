@@ -432,15 +432,17 @@ export const getSchedules = async (req, res) => {
     const owner = req.query.q; // please note that this is a query not a body
     const { data: Schedule, error } = await supabase
         .from("Schedule")
-        .select("*")
-        .eq("member_id", owner);
-
-    const { data: Member, error: error1 } = await supabase
-        .from("Members")
         .select(
-            "first_name, last_name, photoUrl, long_description, short_description, appointment_duration, appointment_amount"
+            `*,
+        appointment_id (
+            status,
+            client_id,
+            schedule_id,
+            date
         )
-        .eq("id", owner);
+        `
+        )
+        .eq("member_id", owner);
 
     if (error) {
         return res
@@ -450,6 +452,13 @@ export const getSchedules = async (req, res) => {
             })
             .status(400);
     }
+
+    const { data: Member, error: error1 } = await supabase
+        .from("Members")
+        .select(
+            "first_name, last_name, photoUrl, long_description, short_description, appointment_duration, appointment_amount"
+        )
+        .eq("id", owner);
 
     if (error1) {
         return res
@@ -938,7 +947,7 @@ export const createToken = async (req, res) => {
 
     const payLoad = {
         access_key: app_access_key,
-        room_id: room,
+        room_id: "633c47474208780bf6650200",
         user_id: name,
         role: "publisher",
         type: "app",
