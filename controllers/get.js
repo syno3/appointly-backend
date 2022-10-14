@@ -59,7 +59,6 @@ export const updateUser = async (req, res) => {
 
 // upload image to bucket and get public url
 export const uploadImage = async (req, res) => {
-  console.log("uploading image............");
   const { file, filename } = req.body;
 
   // upload file to bucket
@@ -91,7 +90,6 @@ export const uploadImage = async (req, res) => {
 //create a new meeting
 // ! working with authorization
 export const createMeeting = async (req, res) => {
-  console.log("uploading meeting............");
   const title = req.body.title;
   const description = req.body.description;
   const payment = req.body.payment;
@@ -105,25 +103,10 @@ export const createMeeting = async (req, res) => {
   const owner = req.body.owner;
   const filename = req.body.filename;
 
-  console.log(
-    title,
-    description,
-    payment,
-    capacity,
-    link,
-    external_link,
-    status,
-    date,
-    time,
-    duration,
-    owner
-  );
   // create signed url
   const { data: publicUrl, err } = await supabase.storage
     .from("meetings")
     .getPublicUrl(`${filename}`);
-
-  console.log(publicUrl);
 
   if (err) {
     return res
@@ -153,7 +136,6 @@ export const createMeeting = async (req, res) => {
   ]);
 
   if (error1) {
-    console.log(error1);
     return res
       .json({
         code: "400",
@@ -161,8 +143,6 @@ export const createMeeting = async (req, res) => {
       })
       .status(400);
   }
-
-  console.log("uploaded meeting............");
 
   return res
     .send({
@@ -178,14 +158,12 @@ export const createMeeting = async (req, res) => {
 export const getMeetings = async (req, res) => {
   const owner = req.query.owner;
 
-  console.log(owner, "owner");
   const { data: meetings, error } = await supabase
     .from("Meetings")
     .select("*")
     .eq("owner", owner);
 
   if (error) {
-    console.log("error occured", error);
     return res
       .json({
         code: "400",
@@ -193,7 +171,6 @@ export const getMeetings = async (req, res) => {
       })
       .status(400);
   }
-  console.log(meetings);
   return res
     .send({
       code: "200",
@@ -588,8 +565,6 @@ export const postAppointment = async (req, res, next) => {
     },
   ]);
 
-  console.log(data);
-
   if (error) {
     return res
       .json({
@@ -768,8 +743,6 @@ export const updateProfile = async (req, res) => {
     filename,
   } = req.body;
 
-  console.log(filename);
-
   // create signed url
   let { data: publicUrl, err } = await supabase.storage
     .from("meetings")
@@ -783,8 +756,6 @@ export const updateProfile = async (req, res) => {
       })
       .status(400);
   }
-
-  console.log(publicUrl);
 
   const { data: Member, error } = await supabase
     .from("Members")
@@ -822,7 +793,6 @@ export const lipaNaMpesaOnline = async (req, res) => {
   const { amount_paid, phone, account_ref, transaction_description } = req.body;
 
   const token = req.mpesaToken;
-  console.log(token);
   const auth = "Bearer " + token;
   const dt = datetime.create();
 
@@ -861,8 +831,6 @@ export const lipaNaMpesaOnline = async (req, res) => {
     TransactionDesc: transaction_desc,
   };
 
-  console.log(requestData);
-
   try {
     const response = await axios.post(lipaNaMpesaUrl, requestData, {
       insecureHTTPParser: true,
@@ -889,7 +857,6 @@ export const lipaNaMpesaOnline = async (req, res) => {
       })
       .status(200);
   } catch (error) {
-    console.log(error);
     return res
       .json({
         code: "400",
@@ -912,8 +879,6 @@ export const lipaNaMpesaCallback = async (req, res) => {
     Timestamp: timestamp,
     CheckoutRequestID: CheckoutRequestID,
   };
-  console.log("were being called");
-  console.log(data);
   try {
     const response = await axios.post(
       "https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query",
@@ -936,7 +901,6 @@ export const lipaNaMpesaCallback = async (req, res) => {
       })
       .status(200);
   } catch (error) {
-    console.log(error);
     return res
       .json({
         code: "400",
