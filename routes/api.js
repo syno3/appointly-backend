@@ -18,9 +18,11 @@ import {
   getAmount,
   getBasic,
   getReviewForMeeting,
+  getUserMeeting,
   createMeeting,
   createToken,
   createSlackMessage,
+  createReviewForMeeting,
   deleteMeeting,
   getMeetingHomepage,
   insertPersonal,
@@ -52,6 +54,8 @@ router.get("/getAppointments", getAppointments);
 router.get("/getClients", getClients);
 router.get("/getAmount", authenticateToken, getAmount);
 router.get("/getBasic", authenticateToken, getBasic);
+router.get("/getUserMeeting", getUserMeeting);
+
 router.get("/rtc", nocache, generateRTCToken); // ? agora rtc token
 router.get("/createToken", createToken);
 
@@ -75,6 +79,7 @@ router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", authenticateToken, postSchedule);
 router.post("/updateMeeting", authenticateToken, updateMeeting);
 router.post("/getReviewForMeeting", getReviewForMeeting);
+router.post("/createReviewForMeeting", createReviewForMeeting);
 
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
 router.post("/thanksForSignup", thanksForSignup);
