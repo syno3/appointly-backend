@@ -21,6 +21,7 @@ import {
   createMeeting,
   createToken,
   createSlackMessage,
+  createReviewForMeeting,
   deleteMeeting,
   getMeetingHomepage,
   insertPersonal,
@@ -75,6 +76,8 @@ router.post("/updateSchedule", updateSchedule);
 router.post("/postSchedule", authenticateToken, postSchedule);
 router.post("/updateMeeting", authenticateToken, updateMeeting);
 router.post("/getReviewForMeeting", getReviewForMeeting);
+router.post("/createReviewForMeeting", createReviewForMeeting);
+
 
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
 router.post("/thanksForSignup", thanksForSignup);
