@@ -704,6 +704,30 @@ export const getBasic = async (req, res) => {
   });
 };
 
+// get basic information from members table
+// No authentification
+export const getUserMeeting = async (req, res) => {
+  const user = req.query.user; // please note that this is a query not a body
+  const { data: Member, error } = await supabase
+    .from("Members")
+    .select("id, first_name, last_name, photoUrl, onboarding")
+    .eq("id", user);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res.json({
+    code: "200",
+    Member,
+  });
+};
+
 // create new schedule
 // ! working with authorization
 export const postSchedule = async (req, res) => {
