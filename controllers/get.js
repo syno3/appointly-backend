@@ -1020,3 +1020,33 @@ export const getReviewForMeeting = async (req, res) => {
     })
     .status(200);
 };
+
+// create review for meeting
+export const createReviewForMeeting = async (req, res) => {
+  const { meeting_id, owner, rating, review } = req.body;
+  const { data, error } = await supabase.from("Review").insert([
+    {
+      meeting_id,
+      owner,
+      rating,
+      review,
+    },
+  ]);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "review created successfully",
+      data,
+    })
+    .status(200);
+};
