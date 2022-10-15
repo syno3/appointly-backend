@@ -52,7 +52,7 @@ router.get("/getSchedules", getSchedules);
 router.get("/getAppointments", getAppointments);
 router.get("/getClients", getClients);
 router.get("/getAmount", authenticateToken, getAmount);
-router.get("/getBasic", getBasic);
+router.get("/getBasic", authenticateToken, getBasic);
 router.get("/rtc", nocache, generateRTCToken); // ? agora rtc token
 router.get("/createToken", createToken);
 
