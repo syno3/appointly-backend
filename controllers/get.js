@@ -319,7 +319,8 @@ export const getMeetingHomepage = async (req, res) => {
     .select("link, payment_amount, owner, id")
     .eq("id", id);
 
-  if (Object.keys(data).length === 0) {
+    // check if data is empty and return error
+  if (data && Object.keys(data).length === 0) {
     return res
       .json({
         error: "404",
