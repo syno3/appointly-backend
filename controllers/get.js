@@ -767,6 +767,7 @@ export const updateProfile = async (req, res) => {
 };
 // lipa na mpesa STK push
 export const lipaNaMpesaOnline = async (req, res) => {
+  // remove after redeployment
   const { amount_paid, phone, account_ref, transaction_description } = req.body;
 
   const token = req.mpesaToken;
