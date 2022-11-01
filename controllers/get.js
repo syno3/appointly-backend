@@ -897,7 +897,7 @@ export const lipaNaMpesaCallback = async (req, res) => {
 export const createSlackMessage = async (req, res) => {
   const { amount_requested, phone } = req.body;
   const url =
-    "https://hooks.slack.com/services/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";
+    "https://hooks.slack.com/services/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";
   try {
     const response = await axios.post(url, {
       text: `A user with phone number ${phone} has requested to withdraw ${amount_requested} from their account`,
@@ -919,6 +919,8 @@ export const createSlackMessage = async (req, res) => {
       .status(400);
   }
 };
+
+// handle withdrawal requests
 
 export const createToken = async (req, res) => {
   const { name, room } = req.body;
