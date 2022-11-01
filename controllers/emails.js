@@ -12,7 +12,6 @@ const auth = {
 const transporter = nodemailer.createTransport(nodemailgun(auth));
 
 export const sendEmail = async (req, res) => {
-  console.log("started email trigger");
   const { email, subject, text } = req.body;
   const mailOptions = {
     from: "festus from appointly <festus@email.appointly.co>",
@@ -75,8 +74,6 @@ export const appointmentConfirmation = async (req, res, next) => {
     )
     .eq("id", schedule_id);
 
-  console.log(schedule);
-
   const mailOptions = {
     from: "festus from appointly <festus@email.appointly.co>",
     to: email[0].email,
@@ -90,13 +87,10 @@ export const appointmentConfirmation = async (req, res, next) => {
     }),
   };
 
-  console.log(mailOptions);
-
   transporter.sendMail(mailOptions, (err, data) => {
     if (err) {
       return console.log("error occured", err);
     } else {
-      console.log("appointment email sent");
       req.body = {
         client_id: client_id,
         schedule_day: date,
@@ -114,7 +108,6 @@ export const appointmentConfirmation = async (req, res, next) => {
 // client booked appointment
 // TODO : GET EMAIL FROM FOREIGN KEY
 export const clientBookedAppointment = async (req, res) => {
-  console.log("starting influencer email");
   const {
     client_id,
     schedule_day,
@@ -124,14 +117,11 @@ export const clientBookedAppointment = async (req, res) => {
     owner_email,
   } = req.body;
 
-  console.log(req.body);
-
   const { data: client, error } = await supabase
     .from("Client")
     .select("first_name, last_name, email")
     .eq("id", client_id);
 
-  console.log("client details obtained ......");
   if (error) {
     return console.log("error occured", error);
   }
@@ -150,8 +140,6 @@ export const clientBookedAppointment = async (req, res) => {
       link: schedule_link, // ! we need to generate dynamic
     }),
   };
-
-  console.log(mailOptions);
 
   transporter.sendMail(mailOptions, (err, data) => {
     if (err) {
@@ -194,7 +182,6 @@ export const meetingConfirmation = async (req, res, next) => {
         first_name: first_name,
         amount_paid: amount_paid,
       };
-      console.log("signup email sent");
       return next();
     }
   });
@@ -202,7 +189,6 @@ export const meetingConfirmation = async (req, res, next) => {
 
 // invite signed up for meeting
 export const inviteSignedUpForMeeting = async (req, res) => {
-  console.log("starting invite signed up for meeting email........");
 
   const { meeting_id, first_name, amount_paid } = req.body;
 
@@ -217,7 +203,6 @@ export const inviteSignedUpForMeeting = async (req, res) => {
     )
     .eq("id", meeting_id);
 
-  console.log(meeting);
 
   const mailOptions = {
     from: "festus from appointly <festus@email.appointly.co>",
