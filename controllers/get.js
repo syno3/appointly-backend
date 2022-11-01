@@ -313,7 +313,6 @@ export const updateMeeting = async (req, res) => {
 //check if meeting has passed
 export const getMeetingHomepage = async (req, res) => {
   const id = req.body.id;
-  const date = Date.now();
   const { data, error } = await supabase
     .from("Meetings")
     .select("link, payment_amount, owner, id")
@@ -338,7 +337,13 @@ export const getMeetingHomepage = async (req, res) => {
       .status(400);
   }
 
-  return res.send({ data, date }).status(200);
+  return res.
+  json({
+    code: "200",
+    message: "meeting fetched successfully",
+    data,
+  })
+  .status(200);
 };
 
 // insert personal details to invites
