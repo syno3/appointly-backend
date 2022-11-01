@@ -94,7 +94,6 @@ export const createMeeting = async (req, res) => {
   const description = req.body.description;
   const payment = req.body.payment;
   const capacity = req.body.capacity;
-  const link = req.body.link;
   const external_link = req.body.external_link;
   const status = req.body.status;
   const date = req.body.date;
@@ -124,7 +123,6 @@ export const createMeeting = async (req, res) => {
       description: description,
       payment_amount: payment,
       capacity: capacity,
-      link: link,
       status: status,
       date_start: date,
       time: time,
