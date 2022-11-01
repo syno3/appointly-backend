@@ -168,7 +168,7 @@ export const meetingConfirmation = async (req, res, next) => {
 
   const { data: meeting, error } = await supabase
     .from("Meetings")
-    .select("title, description, date_start, time, duration, link")
+    .select("title, description, date_start, time, duration, external_link")
     .eq("id", meeting_id);
 
   const mailOptions = {
@@ -182,7 +182,7 @@ export const meetingConfirmation = async (req, res, next) => {
       date_start: meeting[0].date_start,
       time: meeting[0].time,
       duration: meeting[0].duration,
-      link: meeting[0].link,
+      link: meeting[0].external_link,
     }),
   };
   transporter.sendMail(mailOptions, (err, data) => {
