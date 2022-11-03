@@ -891,34 +891,33 @@ export const lipaNaMpesaCallback = async (req, res) => {
   }
 };
 
-// ! working with authorization
-export const createSlackMessage = async (req, res) => {
-  const { amount_requested, phone } = req.body;
-  const url =
-    "https://hooks.slack.com/services/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";
-  try {
-    const response = await axios.post(url, {
-      text: `A user with phone number ${phone} has requested to withdraw ${amount_requested} from their account`,
-    });
-    const data = response.data;
-    return res
-      .json({
-        code: "200",
-        message: "slack message sent successfully",
-        data,
-      })
-      .status(200);
-  } catch (err) {
-    return res
-      .json({
-        code: "400",
-        error: err,
-      })
-      .status(400);
-  }
-};
-
 // handle withdrawal requests
+export const postWithdrawalRequest = async (req, res) => {
+  const { owner_id, amount, phone_number} = req.body;
+  const { data: Request, error } = await supabase
+  .from("Withdrawal")
+  .insert([{
+    owner_id: owner_id,
+    amount: amount,
+    phone_number: phone_number,
+    status: "pending"
+  }])
+  if (error){
+    return res
+    .json({
+      code: "400",
+      error,
+    })
+    .status(400);
+  }
+  return res
+  .json({
+    code: "200",
+    message: "withdrawal request created successfully",
+    Request,
+  })
+  .status(200);
+};
 
 export const createToken = async (req, res) => {
   const { name, room } = req.body;

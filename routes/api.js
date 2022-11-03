@@ -20,8 +20,8 @@ import {
   getReviewForMeeting,
   createMeeting,
   createToken,
-  createSlackMessage,
   createReviewForMeeting,
+  postWithdrawalRequest,
   deleteMeeting,
   getMeetingHomepage,
   insertPersonal,
@@ -77,6 +77,8 @@ router.post("/postSchedule", authenticateToken, postSchedule);
 router.post("/updateMeeting", authenticateToken, updateMeeting);
 router.post("/getReviewForMeeting", getReviewForMeeting);
 router.post("/createReviewForMeeting", createReviewForMeeting);
+router.post("/postWithdrawalRequest", authenticateToken, postWithdrawalRequest);
+
 
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
 router.post("/thanksForSignup", thanksForSignup);
@@ -84,7 +86,6 @@ router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", authenticateToken, updateProfile);
 router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
 router.post("/lipaNaMpesaCallback", lipaNaMpesaCallback);
-router.post("/createSlackMessage", authenticateToken, createSlackMessage);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);
