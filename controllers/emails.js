@@ -159,6 +159,25 @@ export const meetingConfirmation = async (req, res, next) => {
     .select("title, description, date_start, time, duration, external_link")
     .eq("id", meeting_id);
 
+    if (error){
+        return res
+        .json({
+          code : 400,
+          message : "error occured sending email"
+        })
+        .status(400)
+    }
+
+    // debug this code
+    if (meeting.length === 0){
+        return res
+        .json({
+          code : 400,
+          message : "meeting not found"
+        })
+        .status(400)
+    }
+
   const mailOptions = {
     from: "festus from appointly <festus@email.appointly.co>",
     to: email,

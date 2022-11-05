@@ -31,7 +31,7 @@ export const MpesaToken = async (req, res, next) => {
     return next();
   } catch (err) {
     return res.json({
-      status: "error",
+      code : 400,
       message: "Error getting Mpesa Token",
       error: err,
     });

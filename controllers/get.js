@@ -796,7 +796,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
   const party_b = bs_short_code; // business short code
   const phone_number = party_a;
   const callback_url =
-    "https://appointly-backend.vercel.app/api/lipaNaMpesaWebHook"; // callback url
+    "https://5118-197-232-61-214.in.ngrok.io/api/lipaNaMpesaWebHook"; // callback url
   const account_reference = `${account_ref}`;
   const transaction_desc = `${transaction_description}`;
 
@@ -851,40 +851,17 @@ export const lipaNaMpesaOnline = async (req, res) => {
 
 // webhook for lipa na mpesa
 export const lipaNaMpesaWebHook = async (req, res) => {
-  // callback from mpesa
-  console.log(".....lipa na mpesa webhook.....");
-  const { Body } = req.body;
-  console.log(prettyjson.render(Body));
+  console.log('-----------Received M-Pesa webhook-----------');
+  // format and dump the request payload recieved from safaricom in the terminal
+  console.log(prettyjson.render(req.body));
   console.log('-----------------------');
-  const { stkCallback } = Body;
-  const { ResultCode, ResultDesc, MerchantRequestID, CheckoutRequestID } =
-    stkCallback;
-  
-  // update payment status
-  if ( ResultCode === 0){
-    return res
-      .json({
-        code: "200",
-        message: "payment successful",
-        ResultCode,
-        ResultDesc,
-        MerchantRequestID,
-        CheckoutRequestID,
-      })
-      .status(200);
-  }
-  else{
-    return res
-      .json({
-        code: "400",
-        message: "payment failed",
-        ResultCode,
-        ResultDesc,
-        MerchantRequestID,
-        CheckoutRequestID,
-      })
-      .status(400);
-  }
+  let message = {
+  "ResponseCode": "00000000",
+  "ResponseDesc": "success"
+  };
+  // check if response code is 0
+  // respond to safaricom servers with a success message
+  res.json(message)
 
 };
 
