@@ -4,6 +4,8 @@ import uuid4 from "uuid4";
 import datetime from "node-datetime";
 import { supabase } from "../utils/supabaseClient.js";
 import dotenv from "dotenv";
+import prettyjson from "prettyjson";
+
 dotenv.config();
 
 export const testUser = async (req, res, next) => {
@@ -848,7 +850,43 @@ export const lipaNaMpesaOnline = async (req, res) => {
 };
 
 // webhook for lipa na mpesa
-export const lipaNaMpesaWebHook = async (req, res) => {};
+export const lipaNaMpesaWebHook = async (req, res) => {
+  // callback from mpesa
+  console.log(".....lipa na mpesa webhook.....");
+  const { Body } = req.body;
+  console.log(prettyjson.render(Body));
+  console.log('-----------------------');
+  const { stkCallback } = Body;
+  const { ResultCode, ResultDesc, MerchantRequestID, CheckoutRequestID } =
+    stkCallback;
+  
+  // update payment status
+  if ( ResultCode === 0){
+    return res
+      .json({
+        code: "200",
+        message: "payment successful",
+        ResultCode,
+        ResultDesc,
+        MerchantRequestID,
+        CheckoutRequestID,
+      })
+      .status(200);
+  }
+  else{
+    return res
+      .json({
+        code: "400",
+        message: "payment failed",
+        ResultCode,
+        ResultDesc,
+        MerchantRequestID,
+        CheckoutRequestID,
+      })
+      .status(400);
+  }
+
+};
 
 // confirm the payment made
 export const lipaNaMpesaCallback = async (req, res) => {

@@ -9,6 +9,7 @@ import {
   updateMeeting,
   lipaNaMpesaOnline,
   lipaNaMpesaCallback,
+  lipaNaMpesaWebHook,
   getMeetings,
   getMeeting,
   getPersonal,
@@ -78,6 +79,8 @@ router.post("/updateMeeting", authenticateToken, updateMeeting);
 router.post("/getReviewForMeeting", getReviewForMeeting);
 router.post("/createReviewForMeeting", createReviewForMeeting);
 router.post("/postWithdrawalRequest", authenticateToken, postWithdrawalRequest);
+router.post("/lipaNaMpesaWebHook", lipaNaMpesaWebHook);
+
 
 
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
