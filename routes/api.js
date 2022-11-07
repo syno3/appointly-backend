@@ -8,7 +8,6 @@ import {
   postAppointment,
   updateMeeting,
   lipaNaMpesaOnline,
-  lipaNaMpesaCallback,
   lipaNaMpesaWebHook,
   getMeetings,
   getMeeting,
@@ -88,7 +87,6 @@ router.post("/thanksForSignup", thanksForSignup);
 router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", authenticateToken, updateProfile);
 router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
-router.post("/lipaNaMpesaCallback", lipaNaMpesaCallback);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);

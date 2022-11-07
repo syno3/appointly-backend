@@ -796,7 +796,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
   const party_b = bs_short_code; // business short code
   const phone_number = party_a;
   const callback_url =
-    "https://5118-197-232-61-214.in.ngrok.io/api/lipaNaMpesaWebHook"; // callback url
+    "https://1419-197-232-61-255.in.ngrok.io/api/lipaNaMpesaWebHook"; // callback url
   const account_reference = `${account_ref}`;
   const transaction_desc = `${transaction_description}`;
 
@@ -863,47 +863,6 @@ export const lipaNaMpesaWebHook = async (req, res) => {
   // respond to safaricom servers with a success message
   res.json(message)
 
-};
-
-// confirm the payment made
-export const lipaNaMpesaCallback = async (req, res) => {
-  const { BusinessShortCode, password, timestamp, CheckoutRequestID, auth } =
-    req.body;
-  const data = {
-    BusinessShortCode: BusinessShortCode,
-    Password: password,
-    Timestamp: timestamp,
-    CheckoutRequestID: CheckoutRequestID,
-  };
-  try {
-    const response = await axios.post(
-      "https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query",
-      data,
-      {
-        insecureHTTPParser: true,
-        headers: {
-          Authorization: auth,
-        },
-      }
-    );
-
-    const details = response.data;
-
-    return res
-      .json({
-        code: "200",
-        message: "lipa na mpesa online detailed fetched successfully",
-        details,
-      })
-      .status(200);
-  } catch (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
 };
 
 // handle withdrawal requests
