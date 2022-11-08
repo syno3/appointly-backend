@@ -159,24 +159,24 @@ export const meetingConfirmation = async (req, res, next) => {
     .select("title, description, date_start, time, duration, external_link")
     .eq("id", meeting_id);
 
-    if (error){
-        return res
-        .json({
-          code : 400,
-          message : "error occured sending email"
-        })
-        .status(400)
-    }
+  if (error) {
+    return res
+      .json({
+        code: 400,
+        message: "error occured sending email",
+      })
+      .status(400);
+  }
 
-    // debug this code
-    if (meeting.length === 0){
-        return res
-        .json({
-          code : 400,
-          message : "meeting not found"
-        })
-        .status(400)
-    }
+  // debug this code
+  if (meeting.length === 0) {
+    return res
+      .json({
+        code: 400,
+        message: "meeting not found",
+      })
+      .status(400);
+  }
 
   const mailOptions = {
     from: "festus from appointly <festus@email.appointly.co>",
@@ -208,7 +208,6 @@ export const meetingConfirmation = async (req, res, next) => {
 
 // invite signed up for meeting
 export const inviteSignedUpForMeeting = async (req, res) => {
-
   const { meeting_id, first_name, amount_paid } = req.body;
 
   const { data: meeting, error } = await supabase
@@ -221,7 +220,6 @@ export const inviteSignedUpForMeeting = async (req, res) => {
     `
     )
     .eq("id", meeting_id);
-
 
   const mailOptions = {
     from: "festus from appointly <festus@email.appointly.co>",

@@ -318,7 +318,7 @@ export const getMeetingHomepage = async (req, res) => {
     .select("link, payment_amount, owner, id")
     .eq("id", id);
 
-    // check if data is empty and return error
+  // check if data is empty and return error
   if (data && Object.keys(data).length === 0) {
     return res
       .json({
@@ -337,13 +337,13 @@ export const getMeetingHomepage = async (req, res) => {
       .status(400);
   }
 
-  return res.
-  json({
-    code: "200",
-    message: "meeting fetched successfully",
-    data,
-  })
-  .status(200);
+  return res
+    .json({
+      code: "200",
+      message: "meeting fetched successfully",
+      data,
+    })
+    .status(200);
 };
 
 // insert personal details to invites
@@ -684,7 +684,6 @@ export const getBasic = async (req, res) => {
   });
 };
 
-
 // create new schedule
 // ! working with authorization
 export const postSchedule = async (req, res) => {
@@ -851,56 +850,73 @@ export const lipaNaMpesaOnline = async (req, res) => {
 
 // webhook for lipa na mpesa
 export const lipaNaMpesaWebHook = async (req, res) => {
-  const { Body } = req.body;
-  if ( Body !== undefined ) {
-    const {stkCallback} = Body;
-    const {ResultCode} = stkCallback;
-    if (ResultCode === 0) {
-      return res
-        .json({
-          code: "200",
-          message: "payment was successful",
-          data: stkCallback,
-        })
-        .status(200);
-    } else {
-      return res
-        .json({
-          code: "400",
-          message: "payment failed",
-          data: stkCallback,
-        })
-        .status(400);
+  console.log("........ lipa na mpesa webhook ........");
+  const code = req.body?.Body?.stkCallback["ResultCode"]; // get the code
+
+  if (code == 0) {
+    const MerchantRequestID = req.body?.Body?.stkCallback["MerchantRequestID"];
+    const CheckoutRequestID = req.body?.Body?.stkCallback["CheckoutRequestID"];
+    const ResultCode = req.body?.Body?.stkCallback["ResultCode"];
+    const Amount =
+      req.body?.Body?.stkCallback["CallbackMetadata"]["Item"]["0"]["Value"];
+    const MpesaReceiptNumber =
+      req.body?.Body?.stkCallback["CallbackMetadata"]["Item"]["1"]["Value"];
+    const TransactionDate =
+      req.body?.Body?.stkCallback["CallbackMetadata"]["Item"]["3"]["Value"];
+    const PhoneNumber =
+      req.body?.Body?.stkCallback["CallbackMetadata"]["Item"]["4"]["Value"];
+
+    const record = {
+      MerchantRequestID: MerchantRequestID,
+      CheckoutRequestID: CheckoutRequestID,
+      ResultCode: ResultCode,
+      PhoneNumber: PhoneNumber,
+      TransactionDate: TransactionDate,
+      MpesaReceiptNumber: MpesaReceiptNumber,
+      Amount: Amount,
+    };
+
+    console.log(record);
+
+    const { data: transactions, error } = await supabase
+      .from("Transactions")
+      .insert([record]);
+
+    if (error) {
+      console.log("error inserting record");
+      console.log(error);
     }
+
+    return;
   }
 };
 
 // handle withdrawal requests
 export const postWithdrawalRequest = async (req, res) => {
-  const { owner_id, amount, phone_number} = req.body;
-  const { data: Request, error } = await supabase
-  .from("Withdrawal")
-  .insert([{
-    owner_id: owner_id,
-    amount: amount,
-    phone_number: phone_number,
-    status: "pending"
-  }])
-  if (error){
+  const { owner_id, amount, phone_number } = req.body;
+  const { data: Request, error } = await supabase.from("Withdrawal").insert([
+    {
+      owner_id: owner_id,
+      amount: amount,
+      phone_number: phone_number,
+      status: "pending",
+    },
+  ]);
+  if (error) {
     return res
-    .json({
-      code: "400",
-      error,
-    })
-    .status(400);
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
   }
   return res
-  .json({
-    code: "200",
-    message: "withdrawal request created successfully",
-    Request,
-  })
-  .status(200);
+    .json({
+      code: "200",
+      message: "withdrawal request created successfully",
+      Request,
+    })
+    .status(200);
 };
 
 export const createToken = async (req, res) => {

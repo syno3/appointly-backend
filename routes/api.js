@@ -80,8 +80,6 @@ router.post("/createReviewForMeeting", createReviewForMeeting);
 router.post("/postWithdrawalRequest", authenticateToken, postWithdrawalRequest);
 router.post("/lipaNaMpesaWebHook", lipaNaMpesaWebHook);
 
-
-
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
 router.post("/thanksForSignup", thanksForSignup);
 router.post("/uploadImage", uploadImage);
