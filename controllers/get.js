@@ -827,6 +827,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
       password: password,
       timestamp: timestamp,
       CheckoutRequestID: data.CheckoutRequestID,
+      MerchantRequestID : data.MerchantRequestID,
       auth: auth,
     };
 
@@ -890,6 +891,33 @@ export const lipaNaMpesaWebHook = async (req, res) => {
     return;
   }
 };
+
+// confirm payment
+export const confirmPayment = async (req, res) => {
+  const {checkoutrequestid } = req.body;
+  const { data: record, error } = await supabase
+    .from("Transactions")
+    .select("*")
+    .eq("CheckoutRequestID", checkoutrequestid);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        message: "error fetching record",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "payment confirmed successfully",
+      record,
+    })
+    .status(200);
+}
 
 // handle withdrawal requests
 export const postWithdrawalRequest = async (req, res) => {
