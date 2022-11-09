@@ -860,6 +860,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
       })
       .status(400);
   }
+
 };
 
 // webhook for lipa na mpesa
@@ -898,10 +899,15 @@ export const lipaNaMpesaWebHook = async (req, res) => {
 
     if (error) {
       console.log("error inserting record");
-      console.log(error);
+      return console.log(error);
     }
 
-    return;
+    return res
+    .json({
+      body: req.body,
+      query: req.query,
+      cookies: req.cookies,
+    })
   }
 };
 
