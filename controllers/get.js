@@ -905,10 +905,13 @@ export const lipaNaMpesaWebHook = async (req, res) => {
     return res
     .json({
       body: req.body,
-      query: req.query,
-      cookies: req.cookies,
     })
   }
+
+  return res
+    .json({
+      body: req.body,
+    })
 };
 
 // confirm payment
