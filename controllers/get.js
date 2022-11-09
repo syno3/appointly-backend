@@ -318,6 +318,7 @@ export const getMeetingHomepage = async (req, res) => {
     .select(
       `*,
       owner (
+          id,
           first_name,
           last_name,
           email
@@ -365,17 +366,21 @@ export const insertPersonal = async (req, res, next) => {
   const amount_paid = req.body.amount_paid;
   const owner_meeting = req.body.owner_meeting;
 
-  const { data, error } = await supabase.from("Invites").insert([
-    {
-      first_name: firstname,
+  const invite = {
+    first_name: firstname,
       last_name: lastname,
       email: email,
       mpesa_number: mpesaphone,
       status: status,
       meeting_id: meeting_id,
       amount_paid: amount_paid,
-      owner_meeting: owner_meeting,
-    },
+      owner_meeting: owner_meeting, // we need to fix error
+  }
+
+  console.log(invite);
+
+  const { data, error } = await supabase.from("Invites").insert([
+    invite
   ]);
 
   if (error) {
