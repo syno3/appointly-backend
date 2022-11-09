@@ -154,7 +154,7 @@ export const clientBookedAppointment = async (req, res) => {
 export const meetingConfirmation = async (req, res, next) => {
   const { meeting_id, email, first_name, amount_paid } = req.body;
 
-  console.log("invite email sent")
+  console.log("invite email sent");
 
   const { data: meeting, error } = await supabase
     .from("Meetings")
@@ -212,7 +212,7 @@ export const meetingConfirmation = async (req, res, next) => {
 export const inviteSignedUpForMeeting = async (req, res) => {
   const { meeting_id, first_name, amount_paid } = req.body;
 
-  console.log("invite email sent")
+  console.log("invite email sent");
 
   const { data: meeting, error } = await supabase
     .from("Meetings")

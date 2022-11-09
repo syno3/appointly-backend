@@ -88,7 +88,6 @@ router.post("/updateProfile", authenticateToken, updateProfile);
 router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
 router.post("/confirmPayment", confirmPayment);
 
-
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);
 

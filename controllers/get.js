@@ -315,7 +315,15 @@ export const getMeetingHomepage = async (req, res) => {
   const id = req.body.id;
   const { data, error } = await supabase
     .from("Meetings")
-    .select("link, payment_amount, owner, id")
+    .select(
+      `*,
+      owner (
+          first_name,
+          last_name,
+          email
+      )
+    `
+    )
     .eq("id", id);
 
   // check if data is empty and return error
@@ -827,7 +835,7 @@ export const lipaNaMpesaOnline = async (req, res) => {
       password: password,
       timestamp: timestamp,
       CheckoutRequestID: data.CheckoutRequestID,
-      MerchantRequestID : data.MerchantRequestID,
+      MerchantRequestID: data.MerchantRequestID,
       auth: auth,
     };
 
@@ -894,7 +902,7 @@ export const lipaNaMpesaWebHook = async (req, res) => {
 
 // confirm payment
 export const confirmPayment = async (req, res) => {
-  const {checkoutrequestid } = req.body;
+  const { checkoutrequestid } = req.body;
   const { data: record, error } = await supabase
     .from("Transactions")
     .select("*")
@@ -917,7 +925,7 @@ export const confirmPayment = async (req, res) => {
       record,
     })
     .status(200);
-}
+};
 
 // handle withdrawal requests
 export const postWithdrawalRequest = async (req, res) => {
