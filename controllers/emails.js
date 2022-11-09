@@ -154,6 +154,8 @@ export const clientBookedAppointment = async (req, res) => {
 export const meetingConfirmation = async (req, res, next) => {
   const { meeting_id, email, first_name, amount_paid } = req.body;
 
+  console.log("invite email sent")
+
   const { data: meeting, error } = await supabase
     .from("Meetings")
     .select("title, description, date_start, time, duration, external_link")
@@ -194,7 +196,7 @@ export const meetingConfirmation = async (req, res, next) => {
   };
   transporter.sendMail(mailOptions, (err, data) => {
     if (err) {
-      return console.log("error occured", err);
+      return console.log("error sending  email occured", err);
     } else {
       req.body = {
         meeting_id: meeting_id,
@@ -209,6 +211,8 @@ export const meetingConfirmation = async (req, res, next) => {
 // invite signed up for meeting
 export const inviteSignedUpForMeeting = async (req, res) => {
   const { meeting_id, first_name, amount_paid } = req.body;
+
+  console.log("invite email sent")
 
   const { data: meeting, error } = await supabase
     .from("Meetings")
