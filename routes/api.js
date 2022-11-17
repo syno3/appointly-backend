@@ -3,6 +3,7 @@ import {
   testUser,
   postClient,
   postSchedule,
+  createPdf,
   uploadImage,
   updateProfile,
   postAppointment,
@@ -80,6 +81,7 @@ router.post("/getReviewForMeeting", getReviewForMeeting);
 router.post("/createReviewForMeeting", createReviewForMeeting);
 router.post("/postWithdrawalRequest", authenticateToken, postWithdrawalRequest);
 router.post("/lipaNaMpesaWebHook", lipaNaMpesaWebHook);
+router.post("/createPdf", createPdf);
 
 // TODO : UPDATE THE ROUTE TO SEND EMAIL
 router.post("/thanksForSignup", thanksForSignup);

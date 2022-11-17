@@ -5,6 +5,13 @@ import datetime from "node-datetime";
 import { supabase } from "../utils/supabaseClient.js";
 import dotenv from "dotenv";
 import prettyjson from "prettyjson";
+import pdf from "html-pdf";
+import PDFTemplate from "./certificate.js";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
@@ -368,20 +375,18 @@ export const insertPersonal = async (req, res, next) => {
 
   const invite = {
     first_name: firstname,
-      last_name: lastname,
-      email: email,
-      mpesa_number: mpesaphone,
-      status: status,
-      meeting_id: meeting_id,
-      amount_paid: amount_paid,
-      owner_meeting: owner_meeting, // we need to fix error
-  }
+    last_name: lastname,
+    email: email,
+    mpesa_number: mpesaphone,
+    status: status,
+    meeting_id: meeting_id,
+    amount_paid: amount_paid,
+    owner_meeting: owner_meeting, // we need to fix error
+  };
 
   console.log(invite);
 
-  const { data, error } = await supabase.from("Invites").insert([
-    invite
-  ]);
+  const { data, error } = await supabase.from("Invites").insert([invite]);
 
   if (error) {
     return res
@@ -860,7 +865,6 @@ export const lipaNaMpesaOnline = async (req, res) => {
       })
       .status(400);
   }
-
 };
 
 // webhook for lipa na mpesa
@@ -902,16 +906,14 @@ export const lipaNaMpesaWebHook = async (req, res) => {
       return console.log(error);
     }
 
-    return res
-    .json({
+    return res.json({
       body: req.body,
-    })
+    });
   }
 
-  return res
-    .json({
-      body: req.body,
-    })
+  return res.json({
+    body: req.body,
+  });
 };
 
 // confirm payment
@@ -1069,4 +1071,17 @@ export const createReviewForMeeting = async (req, res) => {
       data,
     })
     .status(200);
+};
+
+/// create pdf
+export const createPdf = async (req, res) => {
+  console.log("creating pdf");
+  pdf.create(PDFTemplate(req.body), {}).toFile("result.pdf", (err) => {
+    if (err) {
+      console.log("error creating pdf");
+      res.send(Promise.reject());
+    }
+    console.log("pdf created successfully");
+    res.send(Promise.resolve());
+  });
 };
