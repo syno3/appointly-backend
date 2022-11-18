@@ -20,6 +20,7 @@ import {
   getAmount,
   getBasic,
   getReviewForMeeting,
+  getPdf,
   createMeeting,
   createToken,
   createReviewForMeeting,
@@ -55,8 +56,10 @@ router.get("/getAppointments", getAppointments);
 router.get("/getClients", getClients);
 router.get("/getAmount", authenticateToken, getAmount);
 router.get("/getBasic", authenticateToken, getBasic);
-router.get("/rtc", nocache, generateRTCToken); // ? agora rtc token
+router.get("/rtc", nocache, generateRTCToken);
 router.get("/createToken", createToken);
+router.get("/getPdf", getPdf);
+
 
 //post routes
 router.post("/createMeeting", authenticateToken, createMeeting);
