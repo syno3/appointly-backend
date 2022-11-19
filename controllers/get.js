@@ -1077,12 +1077,9 @@ export const createReviewForMeeting = async (req, res) => {
 export const generatePdf = async (req, res) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  // load the page including images
-  
-  const route = path.join(__dirname, "index.html");
-  const html = fs.readFileSync(route, 'utf-8');
-  await page.setContent(html, { waitUntil: 'domcontentloaded' });
-
+  const website_url = 'http://127.0.0.1:5500/template/index.html'; 
+  await page.goto(website_url, { waitUntil: 'networkidle0' }); 
+  await page.emulateMediaType('screen');
   const pdf = await page.pdf({
     format: "letter",
     landscape: true,
