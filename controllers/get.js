@@ -4,9 +4,14 @@ import uuid4 from "uuid4";
 import datetime from "node-datetime";
 import { supabase } from "../utils/supabaseClient.js";
 import dotenv from "dotenv";
-import pdf from "html-pdf";
-import PDFTemplate from "./certificate.js";
-import path from 'path';
+import puppeteer from "puppeteer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
@@ -1068,23 +1073,22 @@ export const createReviewForMeeting = async (req, res) => {
     .status(200);
 };
 
-/// create pdf
-export const createPdf = async (req, res) => {
-  console.log("creating pdf");
-  pdf.create(PDFTemplate(req.body), {}).toFile("resources/certificate.pdf", (err) => {
-    if (err) {
-      console.log("error creating pdf");
-      res.send(Promise.reject());
-    }
-    console.log("pdf created successfully");
-    res.send(Promise.resolve());
+// generate pdf with puppeteer
+export const generatePdf = async (req, res) => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  // load the page including images
+  
+  const route = path.join(__dirname, "index.html");
+  const html = fs.readFileSync(route, 'utf-8');
+  await page.setContent(html, { waitUntil: 'domcontentloaded' });
+
+  const pdf = await page.pdf({
+    format: "letter",
+    landscape: true,
+    printBackground: true,
   });
-};
-
-
-// get pdf in resources folder
-export const getPdf = async (req, res) => {
-  console.log("getting pdf");
-  const dir = path.join(process.cwd(), "resources/certificate.pdf");
-  res.sendFile(dir);
+  await browser.close();
+  res.contentType("application/pdf");
+  return res.send(pdf);
 }
