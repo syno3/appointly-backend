@@ -1077,7 +1077,8 @@ export const createReviewForMeeting = async (req, res) => {
 export const generatePdf = async (req, res) => {
   const { url } = req.body;
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security"],
+    headless: true,
+    args: ["--disable-web-security"],
   });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: 'networkidle0' }); 
@@ -1089,14 +1090,20 @@ export const generatePdf = async (req, res) => {
     scale: 1.05,
     printBackground: true,
   });
-  await browser.close();
-  res.contentType("application/pdf");
-  return res.send(pdf);
+
+  // save file
+  fs.writeFile("certificate.pdf", pdf, (err) => {
+    if (err) {
+      console.log(err);
+      res.send(Promise.reject());
+    } else {
+      console.log("file saved");
+      res.send(Promise.resolve());
+    }
+  });
 }
 
-// cors proxy
-export const corsProxy = async (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
+// send file
+export const fetchfile = async (req, res) => {
+  res.sendFile(process.cwd() + "/certificate.pdf");
 }

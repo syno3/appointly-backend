@@ -4,7 +4,7 @@ import {
   postClient,
   postSchedule,
   generatePdf,
-  corsProxy,
+  fetchfile,
   uploadImage,
   updateProfile,
   postAppointment,
@@ -58,6 +58,8 @@ router.get("/getAmount", authenticateToken, getAmount);
 router.get("/getBasic", authenticateToken, getBasic);
 router.get("/rtc", nocache, generateRTCToken);
 router.get("/createToken", createToken);
+router.get("/fetchfile", fetchfile);
+
 
 //post routes
 router.post("/createMeeting", authenticateToken, createMeeting);
@@ -89,7 +91,7 @@ router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", authenticateToken, updateProfile);
 router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
 router.post("/confirmPayment", confirmPayment);
-router.post("/generatePdf", corsProxy, generatePdf);
+router.post("/generatePdf", generatePdf);
 
 //delete routes
 router.delete("/deleteMeeting", deleteMeeting);
