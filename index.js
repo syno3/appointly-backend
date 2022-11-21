@@ -8,7 +8,9 @@ import expressStatusMonitor from "express-status-monitor";
 const app = express();
 app.use(bodyparser.json({ limit: "50mb", extended: true }));
 app.use(bodyparser.urlencoded({ limit: "50mb", extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: "*",
+}));
 
 const options = {
   failOnErrors: true, // Whether or not to throw when parsing errors. Defaults to false.
