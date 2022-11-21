@@ -1093,3 +1093,10 @@ export const generatePdf = async (req, res) => {
   res.contentType("application/pdf");
   return res.send(pdf);
 }
+
+// cors proxy
+export const corsProxy = async (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+}
