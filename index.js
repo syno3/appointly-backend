@@ -11,6 +11,7 @@ app.use(bodyparser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
+  preflightContinue: false,
 }));
 
 
