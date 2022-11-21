@@ -9,7 +9,8 @@ const app = express();
 app.use(bodyparser.json({ limit: "50mb", extended: true }));
 app.use(bodyparser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors({
-  origin: "*"
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 const options = {
