@@ -13,6 +13,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"],
   preflightContinue: true,
   optionsSuccessStatus: 204,
+  
 }));
 
 const options = {
