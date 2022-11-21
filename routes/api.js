@@ -3,7 +3,6 @@ import {
   testUser,
   postClient,
   postSchedule,
-  generatePdf,
   uploadImage,
   updateProfile,
   postAppointment,
@@ -88,7 +87,6 @@ router.post("/uploadImage", uploadImage);
 router.post("/updateProfile", authenticateToken, updateProfile);
 router.post("/lipaNaMpesaOnline", MpesaToken, lipaNaMpesaOnline);
 router.post("/confirmPayment", confirmPayment);
-router.post("/generatePdf", generatePdf);
 
 
 //delete routes

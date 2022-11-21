@@ -1072,24 +1072,3 @@ export const createReviewForMeeting = async (req, res) => {
     })
     .status(200);
 };
-
-// generate pdf with puppeteer
-export const generatePdf = async (req, res) => {
-  const { url } = req.body;
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security"],
-  });
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle0' }); 
-  await page.emulateMediaType('screen');
-  const pdf = await page.pdf({
-    format: "letter",
-    landscape: true,
-    preferCSSPageSize: true,
-    scale: 1.05,
-    printBackground: true,
-  });
-  await browser.close();
-  res.contentType("application/pdf");
-  return res.send(pdf);
-}
