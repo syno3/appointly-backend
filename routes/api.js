@@ -21,7 +21,6 @@ import {
   getBasic,
   getReviewForMeeting,
   createMeeting,
-  createToken,
   createReviewForMeeting,
   postWithdrawalRequest,
   deleteMeeting,
@@ -56,7 +55,6 @@ router.get("/getClients", getClients);
 router.get("/getAmount", authenticateToken, getAmount);
 router.get("/getBasic", authenticateToken, getBasic);
 router.get("/rtc", nocache, generateRTCToken);
-router.get("/createToken", createToken);
 
 //post routes
 router.post("/createMeeting", authenticateToken, createMeeting);

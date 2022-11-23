@@ -1,6 +1,4 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
-import uuid4 from "uuid4";
 import datetime from "node-datetime";
 import { supabase } from "../utils/supabaseClient.js";
 import dotenv from "dotenv";
@@ -962,44 +960,6 @@ export const postWithdrawalRequest = async (req, res) => {
       Request,
     })
     .status(200);
-};
-
-export const createToken = async (req, res) => {
-  const { name, room } = req.body;
-  const app_access_key = process.env.APP_ACCESS_KEY;
-  const app_secret_key = process.env.APP_SECRET_KEY;
-
-  const payLoad = {
-    access_key: app_access_key,
-    room_id: "633c47474208780bf6650200",
-    user_id: name,
-    role: "publisher",
-    type: "app",
-    version: "2",
-    iat: Math.floor(Date.now() / 1000),
-    nbf: Math.floor(Date.now() / 1000),
-  };
-  try {
-    const token = jwt.sign(payLoad, app_secret_key, {
-      algorithm: "HS256",
-      expiresIn: "1h",
-      jwtid: uuid4(),
-    });
-    return res
-      .json({
-        code: "200",
-        message: "token generated successfully",
-        token,
-      })
-      .status(200);
-  } catch (error) {
-    return res
-      .json({
-        code: "400",
-        error,
-      })
-      .status(400);
-  }
 };
 
 // get review for meeting
