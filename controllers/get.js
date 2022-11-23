@@ -4,16 +4,19 @@ import uuid4 from "uuid4";
 import datetime from "node-datetime";
 import { supabase } from "../utils/supabaseClient.js";
 import dotenv from "dotenv";
-import puppeteer from "puppeteer";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 dotenv.config();
+
+// puppeteer configurations
+let chrome = {}
+let puppeteer;
+
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION){
+  chrome  = require('chrome-aws-lambda');
+  puppeteer = require('puppeteer-core');
+} else {
+  puppeteer = require('puppeteer');
+}
 
 export const testUser = async (req, res, next) => {
   res
@@ -1075,19 +1078,34 @@ export const createReviewForMeeting = async (req, res) => {
 
 // generate pdf with puppeteer
 export const generatePdf = async (req, res) => {
+  let options ={}
   const { url } = req.body;
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle0' }); 
-  await page.emulateMediaType('screen');
-  const pdf = await page.pdf({
-    format: "letter",
-    landscape: true,
-    preferCSSPageSize: true,
-    scale: 1.05,
-    printBackground: true,
-  });
-  await browser.close();
-  res.contentType("application/pdf");
-  return res.send(pdf);
+  if (process.env.AWS_LAMBDA_FUNCTION_VERSION){
+    options = {
+      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true,
+    };
+  }
+  try{
+    const browser = await puppeteer.launch(options);
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle0' }); 
+    await page.emulateMediaType('screen');
+    const pdf = await page.pdf({
+      format: "letter",
+      landscape: true,
+      preferCSSPageSize: true,
+      scale: 1.05,
+      printBackground: true,
+    });
+    await browser.close();
+    res.contentType("application/pdf");
+    return res.send(pdf);
+  } catch (err){
+    console.log(err);
+    return res.status(500).json({error: err});
+  }
 }
