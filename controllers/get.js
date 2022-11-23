@@ -3,6 +3,7 @@ import datetime from "node-datetime";
 import { supabase } from "../utils/supabaseClient.js";
 import dotenv from "dotenv";
 import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 dotenv.config();
 
@@ -1030,7 +1031,7 @@ export const createReviewForMeeting = async (req, res) => {
 export const generatePdf = async (req, res) => {
   const { url } = req.body;
   try{
-    const browser = await chromium.puppeteer.launch({
+    const browser = await puppeteer.launch({
       args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath,
