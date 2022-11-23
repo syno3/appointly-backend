@@ -42,7 +42,6 @@
     "nodemailer-mailgun-transport": "^2.1.4",
     "nodemon": "^2.0.20",
     "prettyjson": "^1.2.5",
-    "puppeteer-core": "^19.2.2",
     "uuid4": "^2.0.3"
   },
   "type": "module",
