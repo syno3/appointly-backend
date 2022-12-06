@@ -238,6 +238,36 @@ export const getSessionHostMeeting = async (req, res) => {
     })
     .status(200);
 }
+
+// get meeting course outline
+export const getMeetingCourseOutline = async (req, res) => {
+  const id = req.query.id; //id of meeting in query
+  const { data: courseOutline, error } = await supabase
+    .from("CourseOutline")
+    .select('details, points')
+    .eq("meeting_id", id);
+
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "courseOutline fetched successfully",
+      courseOutline,
+    })
+    .status(200);
+
+
+};
+
+
 //delete a meeting
 export const deleteMeeting = async (req, res) => {
   const id = req.body.id; //id of meeting in query

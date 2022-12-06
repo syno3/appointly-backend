@@ -14,6 +14,7 @@ import {
   getMeetings,
   getMeeting,
   getSessionHostMeeting,
+  getMeetingCourseOutline,
   getPersonal,
   getSchedules,
   getAppointments,
@@ -49,6 +50,7 @@ const router = express.Router();
 router.get("/", testUser, meetingConfirmation, inviteSignedUpForMeeting); // test route
 router.get("/getMeetings", authenticateToken, getMeetings);
 router.get("/getMeeting", getMeeting);
+router.get("/getMeetingCourseOutline", getMeetingCourseOutline);
 router.get("/getSessionHostMeeting", getSessionHostMeeting);
 router.get("/getPersonal", authenticateToken, getPersonal);
 router.get("/getSchedules", getSchedules);
