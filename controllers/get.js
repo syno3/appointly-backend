@@ -213,7 +213,31 @@ export const getMeeting = async (req, res) => {
     })
     .status(200);
 };
+/// get session host meeting
+export const getSessionHostMeeting = async (req, res) => {
+  const id = req.query.id; //id of meeting in query
+  const { data: Host, error } = await supabase
+    .from("Host")
+    .select('first_name, last_name, role, image')
+    .eq("meeting_id", id);
 
+  if (error) {
+    return res
+      .json({
+        code: "400",
+        error,
+      })
+      .status(400);
+  }
+
+  return res
+    .json({
+      code: "200",
+      message: "Host fetched successfully",
+      Host,
+    })
+    .status(200);
+}
 //delete a meeting
 export const deleteMeeting = async (req, res) => {
   const id = req.body.id; //id of meeting in query

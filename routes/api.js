@@ -13,6 +13,7 @@ import {
   confirmPayment,
   getMeetings,
   getMeeting,
+  getSessionHostMeeting,
   getPersonal,
   getSchedules,
   getAppointments,
@@ -48,6 +49,7 @@ const router = express.Router();
 router.get("/", testUser, meetingConfirmation, inviteSignedUpForMeeting); // test route
 router.get("/getMeetings", authenticateToken, getMeetings);
 router.get("/getMeeting", getMeeting);
+router.get("/getSessionHostMeeting", getSessionHostMeeting);
 router.get("/getPersonal", authenticateToken, getPersonal);
 router.get("/getSchedules", getSchedules);
 router.get("/getAppointments", getAppointments);
